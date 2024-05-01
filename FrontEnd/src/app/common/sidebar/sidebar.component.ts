@@ -79,7 +79,7 @@ export class SidebarComponent {
     }
 
     logout(){
-        this.keycloakAuthService.logout(false);
+        this.keycloakAuthService.logout(true);
     }
 
 }

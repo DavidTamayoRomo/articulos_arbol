@@ -3,7 +3,7 @@
     [ngClass]="{'active': isSidebarToggled, 'sticky': isSticky}"
     [class.component-dark-theme]="themeService.isDark()"
     [class.right-sidebar]="themeService.isRightSidebar()"
-    [class.hide-sidebar]="themeService.isHideSidebar()"
+    [class.hide-sidebar]="mostrarLogin"
     [class.dark-header]="themeService.isHeaderDark()"
     [class.card-borderd-theme]="themeService.isCardBorder()"
     [class.rtl-enabled]="themeService.isRTLEnabled()"
@@ -57,7 +57,7 @@
                                 <a routerLink="/my-profile" class="d-inline-block fw-medium">
                                     {{loggedUser}}
                                 </a>
-                                <span class="designation d-block text-body">
+                                <span class="designation d-block text-body" *ngIf="mostrarLogout">
                                     Admin
                                 </span>
                             </div>

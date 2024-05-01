@@ -26,7 +26,7 @@ import { SidebarComponent } from '../../common/sidebar/sidebar.component';
 })
 export class AdminPageComponent {
 
-  title = 'Daxa -  Angular 17 Material Design Admin Dashboard Template';
+  title = 'Codigo Municipal';
   routerSubscription: any;
   location: any;
 
