@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  codigo_municipal_backend:
+    image: codigo_municipal_backend
+    build:
+      context: .
+      dockerfile: BackEnd/DockerFile
+    ports:
+     - 8282:8282
+    restart: always
+  codigo_municipal_frontend:
+    image: codigo_municipal_frontend
+    build: 
+      context: .
+      dockerfile: FrontEnd/DockerFile
+    ports:
+      - 5500:80
+      - 5543:443
+    #environment:
+    #  NODE_ENV: production
+    restart: always
+  
