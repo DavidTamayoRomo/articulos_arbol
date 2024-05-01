@@ -1,0 +1,959 @@
+// To Do List
+.mat-mdc-card {
+    &.daxa-card {
+        &.to-do-list-card {
+            .mat-mdc-card-content {
+                margin: {
+                    left: -20px;
+                    right: -20px;
+                }
+
+                ;
+
+                .to-do-list-table {
+                    .mat-mdc-table {
+                        .mat-mdc-header-cell {
+                            &:last-child {
+                                text-align: right;
+                            }
+
+                            &:first-child {
+                                padding-right: 0;
+                            }
+                        }
+
+                        .mat-mdc-cell {
+                            text-align: center;
+                            /* Centración horizontal */
+                            vertical-align: middle;
+
+                            /* Centración vertical */
+                            padding: {
+                                top: 21.5px;
+                                bottom: 21.5px;
+                            }
+
+                            ;
+
+                            &:last-child {
+                                text-align: right;
+                            }
+
+                            &:first-child {
+                                padding-right: 0;
+                            }
+                        }
+
+                        .daxa-badge {
+                            color: var(--daxaColor);
+                            background: rgba(15, 121, 243, 0.10);
+
+                            &.in-progress {
+                                color: var(--warningColor);
+                                background: rgba(241, 179, 28, 0.10);
+                            }
+
+                            &.pending {
+                                color: var(--successColor);
+                                background: rgba(46, 212, 126, 0.10);
+                            }
+
+                            &.not-started {
+                                color: var(--dangerColor);
+                                background: rgba(231, 76, 60, 0.10);
+                            }
+                        }
+                    }
+                }
+
+                .add-new-task-btn {
+                    padding: {
+                        top: 20px;
+                        left: 20px;
+                        right: 20px;
+                    }
+
+                    ;
+
+                    .mat-mdc-button {
+                        padding: 0;
+                        height: auto;
+                        min-width: auto;
+
+                        font: {
+                            size: var(--fontSize) !important;
+                            weight: normal;
+                        }
+
+                        ;
+
+                        &:not(:disabled) {
+                            color: var(--daxaColor);
+                        }
+                    }
+                }
+            }
+
+            &.rtl-enabled {
+                .mat-mdc-card-content {
+                    .to-do-list-table {
+                        .mat-mdc-table {
+                            .mat-mdc-header-cell {
+                                &:last-child {
+                                    text-align: left;
+                                }
+
+                                &:first-child {
+                                    padding: {
+                                        right: 20px;
+                                        left: 0;
+                                    }
+
+                                    ;
+                                }
+                            }
+
+                            .mat-mdc-cell {
+                                text-align: center;
+                                /* Centración horizontal */
+                                vertical-align: middle;
+
+                                /* Centración vertical */
+                                &:last-child {
+                                    text-align: left;
+                                }
+
+                                &:first-child {
+                                    padding: {
+                                        right: 20px;
+                                        left: 0;
+                                    }
+
+                                    ;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Add New Task Popup
+::ng-deep {
+    .add-new-task-popup {
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0;
+        z-index: 999;
+        position: fixed;
+        transition: .3s;
+        visibility: hidden;
+        background-color: rgba(0, 0, 0, 0.5);
+
+        overflow: {
+            x: hidden;
+            y: auto;
+        }
+
+        ;
+
+        .popup-dialog {
+            display: flex;
+            transition: .3s;
+            max-width: 900px;
+            align-items: center;
+            transform: translate(0, -20px);
+            min-height: calc(100% - 1.75rem * 2);
+
+            margin: {
+                left: auto;
+                right: auto;
+            }
+
+            ;
+
+            .daxa-card {
+                width: 100%;
+
+                .mat-mdc-card-header {
+                    border-bottom: 1px solid #eeeeee;
+
+                    margin: {
+                        left: -20px;
+                        right: -20px;
+                    }
+
+                    ;
+
+                    padding: {
+                        left: 20px;
+                        right: 20px;
+                        bottom: 18px;
+                    }
+
+                    ;
+
+                    .mat-mdc-card-subtitle {
+                        .mat-mdc-button {
+                            padding: 0;
+                            height: auto;
+                            line-height: 1;
+                            min-width: auto;
+                            display: inline-block;
+                            font-size: 23px !important;
+                        }
+                    }
+                }
+
+                .mat-mdc-card-content {
+                    .main-label {
+                        margin-bottom: 12px;
+                        font-size: 15px;
+                    }
+
+                    .mat-mdc-form-field {
+                        margin-bottom: 20px;
+                    }
+
+                    .btn-box {
+                        text-align: right;
+
+                        .mat-mdc-button {
+                            border: 0;
+                            height: auto;
+                            min-width: auto;
+                            min-height: auto;
+                            padding: 14px 35px;
+                            font-weight: normal;
+                            color: var(--whiteColor);
+                            font-size: 15px !important;
+                            background-color: var(--daxaColor);
+
+                            &:first-child {
+                                margin-right: 10px;
+                                background-color: var(--dangerColor);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        &.active {
+            opacity: 1;
+            visibility: visible;
+
+            .popup-dialog {
+                transform: none;
+            }
+        }
+
+        &.rtl-enabled {
+            .popup-dialog {
+                .daxa-card {
+                    .mat-mdc-card-content {
+                        .btn-box {
+                            text-align: left;
+
+                            .mat-mdc-button {
+                                &:first-child {
+                                    margin: {
+                                        right: 0;
+                                        left: 10px;
+                                    }
+
+                                    ;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* Max width 767px */
+@media only screen and (max-width : 767px) {
+
+    // To Do List
+    .mat-mdc-card {
+        &.daxa-card {
+            &.to-do-list-card {
+                .mat-mdc-card-content {
+                    margin: {
+                        left: -15px;
+                        right: -15px;
+                    }
+
+                    ;
+
+                    .to-do-list-table {
+                        .mat-mdc-table {
+                            .info {
+                                .image {
+                                    width: 40px;
+                                    margin-right: 8px;
+                                }
+                            }
+                        }
+                    }
+
+                    .add-new-task-btn {
+                        .mat-mdc-button {
+                            font-size: 14px !important;
+                        }
+                    }
+                }
+
+                &.rtl-enabled {
+                    .mat-mdc-card-content {
+                        .to-do-list-table {
+                            .mat-mdc-table {
+                                .mat-mdc-header-cell {
+                                    &:first-child {
+                                        padding: {
+                                            right: 15px;
+                                        }
+
+                                        ;
+                                    }
+                                }
+
+                                .mat-mdc-cell {
+                                    text-align: center;
+                                    /* Centración horizontal */
+                                    vertical-align: middle;
+
+                                    /* Centración vertical */
+                                    &:first-child {
+                                        padding: {
+                                            right: 15px;
+                                        }
+
+                                        ;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    ::ng-deep {
+        .mat-mdc-card {
+            &.daxa-card {
+                &.to-do-list-card {
+                    .mat-mdc-card-header {
+                        .mat-mdc-card-header-text {
+                            display: block;
+
+                            .mat-mdc-card-subtitle {
+                                margin-top: 12px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Add New Task Popup
+    ::ng-deep {
+        .add-new-task-popup {
+            .popup-dialog {
+                max-width: 900px;
+
+                .daxa-card {
+                    .mat-mdc-card-header {
+                        margin: {
+                            left: -15px;
+                            right: -15px;
+                        }
+
+                        ;
+
+                        padding: {
+                            left: 15px;
+                            right: 15px;
+                            bottom: 15px;
+                        }
+
+                        ;
+
+                        .mat-mdc-card-subtitle {
+                            .mat-mdc-button {
+                                font-size: 20px !important;
+                            }
+                        }
+                    }
+
+                    .mat-mdc-card-content {
+                        .main-label {
+                            font-size: 14px;
+                        }
+
+                        .mat-mdc-form-field {
+                            margin-bottom: 15px;
+                        }
+
+                        .btn-box {
+                            .mat-mdc-button {
+                                font-size: 14px !important;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+/* Min width 576px to Max width 767px */
+@media only screen and (min-width : 576px) and (max-width : 767px) {
+
+    // To Do List
+    .mat-mdc-card {
+        &.daxa-card {
+            &.to-do-list-card {
+                .mat-mdc-card-content {
+                    margin: {
+                        left: -20px;
+                        right: -20px;
+                    }
+
+                    ;
+                }
+
+                &.rtl-enabled {
+                    .mat-mdc-card-content {
+                        .to-do-list-table {
+                            .mat-mdc-table {
+                                .mat-mdc-header-cell {
+                                    &:first-child {
+                                        padding: {
+                                            right: 20px;
+                                        }
+
+                                        ;
+                                    }
+                                }
+
+                                .mat-mdc-cell {
+                                    text-align: center;
+                                    /* Centración horizontal */
+                                    vertical-align: middle;
+
+                                    /* Centración vertical */
+                                    &:first-child {
+                                        padding: {
+                                            right: 20px;
+                                        }
+
+                                        ;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+/* Min width 768px to Max width 991px */
+@media only screen and (min-width : 768px) and (max-width : 991px) {
+
+    // To Do List
+    .mat-mdc-card {
+        &.daxa-card {
+            &.to-do-list-card {
+                .mat-mdc-card-content {
+                    .add-new-task-btn {
+                        .mat-mdc-button {
+                            font-size: 15px !important;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+/* Min width 992px to Max width 1199px */
+@media only screen and (min-width : 992px) and (max-width : 1199px) {}
+
+/* Min width 1200px to Max width 1399px */
+@media only screen and (min-width: 1200px) and (max-width: 1399px) {}
+
+/* Min width 1600px */
+@media only screen and (min-width: 1600px) {}
+
+
+.mat-mdc-card {
+    &.daxa-card {
+        &.sidebar-card {
+            .mat-mdc-card-content {
+                .search-box {
+                    margin-bottom: 20px;
+
+                    i {
+                        transform: translateY(-50%);
+                        color: var(--blackColor);
+                        position: absolute;
+                        font-size: 18px;
+                        left: 13px;
+                        top: 50%;
+                    }
+
+                    .input-search {
+                        height: 45px;
+                        font-size: 14px;
+                        border-radius: 3px;
+                        background: #f4f6fc;
+                        color: var(--blackColor);
+
+                        padding: {
+                            left: 40px;
+                            right: 15px;
+                        }
+
+                        ;
+
+                        &::placeholder {
+                            font-weight: 300;
+                            color: var(--bodyColor);
+                            transition: var(--transition);
+                        }
+
+                        &:focus {
+                            &::placeholder {
+                                color: transparent;
+                            }
+                        }
+                    }
+                }
+
+                .sidebar-list {
+                    margin: {
+                        top: 25px;
+                        bottom: 35px;
+                    }
+
+                    ;
+
+                    li {
+                        margin-bottom: 22px;
+
+                        a {
+                            padding-left: 28px;
+
+                            i {
+                                transform: translateY(-50%);
+                                position: absolute;
+                                margin-top: -.5px;
+                                font-size: 16px;
+                                top: 50%;
+                                left: 0;
+                            }
+
+                            span {
+                                font-size: 14px;
+                            }
+
+                            &.active {
+                                color: var(--daxaColor);
+                            }
+                        }
+
+                        &:last-child {
+                            margin-bottom: 0;
+                        }
+
+                        ul {
+                            padding-left: 28px;
+
+                            margin: {
+                                top: 20px;
+                                bottom: 25px;
+                            }
+
+                            ;
+
+                            li {
+                                margin-bottom: 18px;
+
+                                a {
+                                    padding-left: 17px;
+                                    font-size: 15.5px;
+
+                                    &::before {
+                                        left: 0;
+                                        top: 50%;
+                                        width: 5px;
+                                        content: '';
+                                        height: 5px;
+                                        border-radius: 50%;
+                                        position: absolute;
+                                        background: #475569;
+                                        transform: translateY(-50%);
+                                        transition: var(--transition);
+                                    }
+
+                                    &.active,
+                                    &:hover {
+                                        &::before {
+                                            background: var(--daxaColor);
+                                        }
+                                    }
+                                }
+
+                                &:last-child {
+                                    margin-bottom: 0;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .storage-status {
+                    h5 {
+                        margin-bottom: 15px;
+                    }
+
+                    .mat-mdc-progress-bar {
+                        margin-bottom: 12px;
+                        --mdc-linear-progress-track-height: 10px;
+                        --mdc-linear-progress-active-indicator-height: 10px;
+                    }
+                }
+            }
+
+            &.component-dark-theme {
+                .mat-mdc-card-content {
+                    .search-box {
+                        i {
+                            color: var(--whiteColor);
+                        }
+
+                        .input-search {
+                            background: rgba(255, 255, 255, .07);
+                            color: var(--whiteColor);
+
+                            &::placeholder {
+                                color: rgba(255, 255, 255, .50);
+                            }
+
+                            &:focus {
+                                &::placeholder {
+                                    color: transparent;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            &.rtl-enabled {
+                .mat-mdc-card-content {
+                    .search-box {
+                        i {
+                            left: auto;
+                            right: 13px;
+                        }
+
+                        .input-search {
+                            padding: {
+                                right: 40px;
+                                left: 15px;
+                            }
+
+                            ;
+                        }
+                    }
+
+                    .sidebar-list {
+                        padding-right: 0;
+
+                        li {
+                            a {
+                                padding: {
+                                    right: 28px;
+                                    left: 0;
+                                }
+
+                                ;
+
+                                i {
+                                    left: auto;
+                                    right: 0;
+                                }
+                            }
+
+                            ul {
+                                padding: {
+                                    left: 0;
+                                    right: 28px;
+                                }
+
+                                ;
+
+                                li {
+                                    a {
+                                        padding: {
+                                            left: 0;
+                                            right: 17px;
+                                        }
+
+                                        ;
+
+                                        &::before {
+                                            left: auto;
+                                            right: 0;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* Max width 767px */
+@media only screen and (max-width : 767px) {
+
+    .mat-mdc-card {
+        &.daxa-card {
+            &.sidebar-card {
+                .mat-mdc-card-content {
+                    .search-box {
+                        margin-bottom: 15px;
+                    }
+
+                    .sidebar-list {
+                        margin: {
+                            top: 15px;
+                            bottom: 20px;
+                        }
+
+                        ;
+
+                        li {
+                            margin-bottom: 15px;
+
+                            a {
+                                padding-left: 25px;
+                            }
+
+                            ul {
+                                padding-left: 25px;
+
+                                margin: {
+                                    top: 15px;
+                                    bottom: 18px;
+                                }
+
+                                ;
+
+                                li {
+                                    margin-bottom: 15px;
+
+                                    a {
+                                        padding-left: 15px;
+                                        font-size: 14px;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    .storage-status {
+                        h5 {
+                            margin-bottom: 12px;
+                        }
+
+                        .mat-mdc-progress-bar {
+                            margin-bottom: 10px;
+                        }
+                    }
+                }
+
+                &.rtl-enabled {
+                    .mat-mdc-card-content {
+                        .sidebar-list {
+                            li {
+                                a {
+                                    padding: {
+                                        left: 0;
+                                        right: 25px;
+                                    }
+
+                                    ;
+                                }
+
+                                ul {
+                                    padding: {
+                                        left: 0;
+                                        right: 25px;
+                                    }
+
+                                    ;
+
+                                    li {
+                                        a {
+                                            padding: {
+                                                left: 0;
+                                                right: 15px;
+                                            }
+
+                                            ;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+/* Min width 576px to Max width 767px */
+@media only screen and (min-width : 576px) and (max-width : 767px) {
+
+    .mat-mdc-card {
+        &.daxa-card {
+            &.sidebar-card {
+                .mat-mdc-card-content {
+                    .search-box {
+                        margin-bottom: 20px;
+                    }
+
+                    .sidebar-list {
+                        margin: {
+                            top: 20px;
+                            bottom: 20px;
+                        }
+
+                        ;
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+/* Min width 768px to Max width 991px */
+@media only screen and (min-width : 768px) and (max-width : 991px) {
+
+    .mat-mdc-card {
+        &.daxa-card {
+            &.sidebar-card {
+                .mat-mdc-card-content {
+                    .sidebar-list {
+                        margin: {
+                            top: 25px;
+                            bottom: 20px;
+                        }
+
+                        ;
+
+                        li {
+                            margin-bottom: 20px;
+
+                            ul {
+                                margin: {
+                                    top: 18px;
+                                    bottom: 22px;
+                                }
+
+                                ;
+
+                                li {
+                                    margin-bottom: 17px;
+
+                                    a {
+                                        font-size: 15px;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+/* Min width 992px to Max width 1199px */
+@media only screen and (min-width : 992px) and (max-width : 1199px) {}
+
+/* Min width 1200px to Max width 1399px */
+@media only screen and (min-width: 1200px) and (max-width: 1399px) {}
+
+/* Min width 1600px */
+@media only screen and (min-width: 1600px) {}
+
+.mat-form-field {
+    margin-right: 4px;
+}
+
+
+::ng-deep {
+    .mat-mdc-card {
+        &.daxa-card {
+            &.file-card {
+                .mat-mdc-card-header {
+                    .mat-mdc-card-header-text {
+                        .mat-mdc-card-subtitle {
+                            .mat-mdc-button {
+                                &.card-header-menu-btn {
+                                    top: 20px;
+                                    right: 20px;
+                                    position: absolute;
+
+                                    &::after {
+                                        display: none;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+.column-contenido {
+    max-width: 80px; // Define un ancho máximo para la columna "contenido"
+    width: 80px; // Define un ancho específico para la columna "contenido"
+    text-align: left; // Puedes ajustar la alineación del texto si es necesario
+}
+
+.column-60 {
+    width: 60px; // Ancho específico
+    max-width: 60px; // Limita el ancho
+    white-space: normal; // Permite que el texto salte a nuevas líneas
+    overflow-wrap: break-word; // Ajusta el texto para evitar desbordamientos
+    text-overflow: ellipsis; // Muestra puntos suspensivos si el texto excede el espacio
+    word-break: break-word; // Divide el texto para evitar desbordamientos
+}

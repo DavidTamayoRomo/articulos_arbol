@@ -1,0 +1,153 @@
+<div class="grid-container">
+    <mat-card class="dashboard-card m-lg-4 m-sm-0 p-1 p-sm-3">
+        <mat-card-header>
+            <mat-card-title style="padding-top: 5px"> Administración de Usuarios </mat-card-title>
+            <mat-card-subtitle style="padding-top: 5px">
+                Administrador Funcional - Codigo municipal
+            </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content" style="padding-top: 5px">
+            <div class="container p-1 p-sm-1">
+                <mat-stepper [linear]="false" #stepper>
+                    <mat-step [stepControl]="firstFormGroup" label="Buscar Usuario">
+                        <div class="container p-0 p-sm-1">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <form [formGroup]="firstFormGroup">
+                                        <p class="text-center m-4 m-md-1">
+                                            Ingresa el Nombre(s) y/o Apellidos(s) del usuario que
+                                            desea registrar
+                                        </p>
+                                        <mat-form-field class="d-md-flex p-2 p-md-0 input-w-md justify-content-center" style="padding-top: 5px">
+                                            <mat-label>Nombres</mat-label>
+                                            <input matInput placeholder="Nombres" formControlName="nombre" required />
+                                        </mat-form-field>
+                                        <mat-form-field class="d-md-flex p-2 p-md-0 input-w-md justify-content-center" style="padding-top: 5px">
+                                            <mat-label>Apellidos</mat-label>
+                                            <input matInput placeholder="Apellidos" formControlName="apellido"
+                                                required />
+                                        </mat-form-field>
+                                        <div class="d-flex justify-content-center" style="padding-top: 5px">
+                                            <button mat-raised-button (click)="buscarUsuario()">
+                                                <mat-icon>search</mat-icon>
+                                                Buscar Usuario
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-8 col-sm-12">
+                                    <p class="text-center m-4 m-md-1">
+                                        Selecciona el Usuario que deseas registrar
+                                    </p>
+                                    <mat-card
+                                        class="daxa-card to-do-list-card mb-25 border-radius bg-white border-none d-block"
+                                        [class.rtl-enabled]="themeService.isRTLEnabled()">
+                                        <mat-card-content>
+                                            <div class="table-responsive">
+                                                <table mat-table [dataSource]="dataSource">
+                                                    <ng-container matColumnDef="nombre">
+                                                        <th mat-header-cell *matHeaderCellDef>Nombre</th>
+                                                        <td mat-cell *matCellDef="let element">
+                                                            {{ element.firstName }}
+                                                        </td>
+                                                    </ng-container>
+
+                                                    <ng-container matColumnDef="apellido">
+                                                        <th mat-header-cell *matHeaderCellDef>Apellido</th>
+                                                        <td mat-cell *matCellDef="let element">
+                                                            {{ element.lastName }}
+                                                        </td>
+                                                    </ng-container>
+
+                                                    <ng-container matColumnDef="usuario">
+                                                        <th mat-header-cell *matHeaderCellDef>Usuario</th>
+                                                        <td mat-cell *matCellDef="let element">
+                                                            {{ element.username }}
+                                                        </td>
+                                                    </ng-container>
+
+                                                    <ng-container matColumnDef="accion">
+                                                        <th mat-header-cell *matHeaderCellDef>Acción</th>
+                                                        <td mat-cell *matCellDef="let element">
+                                                            <button mat-button (click)="secondStep(element)">Asignar
+                                                                Rol</button>
+                                                        </td>
+                                                    </ng-container>
+
+                                                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                                    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                                                </table>
+                                            </div>
+                                        </mat-card-content>
+                                        <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+                                        </mat-paginator>
+                                    </mat-card>
+                                </div>
+                            </div>
+                        </div>
+
+                    </mat-step>
+
+
+
+                    <mat-step [stepControl]="segundoFormGroup" label="Asignar rol">
+                        <form [formGroup]="segundoFormGroup">
+                            <div class="row">
+                                <div class="col-6">
+                                    <p>Datos Usuario</p>
+                                    <div class="container p-0">
+                                        <p>Nombres: {{usuarioSeleccionado?.firstName}} {{usuarioSeleccionado?.lastName}}
+                                        </p>
+                                        <p>Email: {{usuarioSeleccionado?.email}}</p>
+                                        <p>Usuario: {{usuarioSeleccionado?.username}}</p>
+                                    </div>
+
+                                </div>
+                                <div class="col-6">
+                                    <div class="row">
+                                        <div class="col-12" *ngIf="visualizarRol">
+                                            <mat-form-field style="padding-top: 5px; padding-bottom: 5px">
+                                                <mat-label>Asignar Rol</mat-label>
+                                                <mat-select [formControl]="roles">
+                                                    @for (rol of rolList; track rol) {
+                                                        <mat-option [value]="rol">
+                                                            {{rol.name}}
+                                                        </mat-option>
+                                                    }
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-md-2">
+
+                                        </div>
+                                        <div class="col-md-8" *ngIf="!visualizarRol">
+                                            <button mat-raised-button style="float: center" style="padding-top: 5px" (click)="eliminarRol()">
+                                                <i style="padding-top: 5px" class="material-symbols-outlined">
+                                                    delete
+                                                </i>
+                                                Eliminar rol existente
+                                            </button>
+                                        </div>
+                                        <div class="col-md-2">
+
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                </div>
+
+                            </div>
+                        </form>
+                        <div style="padding-top: 60px">
+                            <button mat-button style="float: left; color: gray" (click)="stepper.selectedIndex = 0">
+                                Regresar
+                            </button>
+                            <button mat-raised-button  style="float: right" (click)="guardarRol()" *ngIf="visualizarRol">
+                                Guardar
+                            </button>
+                        </div>
+                    </mat-step>
+                </mat-stepper>
+            </div>
+        </mat-card-content>
+    </mat-card>

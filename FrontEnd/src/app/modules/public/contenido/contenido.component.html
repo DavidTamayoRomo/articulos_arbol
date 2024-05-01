@@ -1,0 +1,13 @@
+<div  [class.dark-theme]="themeService.isDark()"
+    [class.card-borderd-theme]="themeService.isCardBorder()"
+    [class.card-border-radius]="themeService.isCardBorderRadius()" [class.rtl-enabled]="themeService.isRTLEnabled()">
+
+    <div class="main-content transition d-flex flex-column" [ngClass]="{'active': isSidebarToggled}"
+        [class.right-sidebar]="themeService.isRightSidebar()" [class.hide-sidebar]="true">
+        <app-header></app-header>
+        <app-lista-articulos></app-lista-articulos>
+        <div class="flex-grow-1"></div>
+        <app-footer></app-footer>
+    </div>
+    
+</div>
