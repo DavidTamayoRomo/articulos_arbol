@@ -39,6 +39,8 @@ const clienteId = environment.keycloakConfig.clientId;
 })
 export class UsuariosComponent {
 
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
   @ViewChild('stepper') stepper: MatStepper;
 
   firstFormGroup = this._formBuilder.group({
@@ -89,7 +91,7 @@ export class UsuariosComponent {
 
   ngAfterViewInit() {
     //Paginar
-    this.dataSource.paginator;
+    this.dataSource.paginator = this.paginator;
   }
 
 
@@ -161,19 +163,27 @@ export class UsuariosComponent {
 
   guardarRol(){
     console.log(this.roles.value);
-    this.usuariosService.guardarRol([this.roles.value], this.usuarioSeleccionado.id).subscribe({
-      next:(resp:any)=>{
-        console.log(resp);
-        this._snackBar.open('Rol asignado correctamente', 'Cerrar', {
-          horizontalPosition: 'right',
-          verticalPosition: 'top',
-        });
-        this.visualizarRol = !this.visualizarRol;
-      },
-      error:(err:any)=>{
-
-      }
-    })
+    if (this.roles.value) {
+      this.usuariosService.guardarRol([this.roles.value], this.usuarioSeleccionado.id).subscribe({
+        next:(resp:any)=>{
+          console.log(resp);
+          this._snackBar.open('Rol asignado correctamente', 'Cerrar', {
+            horizontalPosition: 'right',
+            verticalPosition: 'top',
+          });
+          this.visualizarRol = !this.visualizarRol;
+        },
+        error:(err:any)=>{
+  
+        }
+      })
+    }else{
+      this._snackBar.open('Seleccione el rol', 'Cerrar', {
+        horizontalPosition: 'right',
+        verticalPosition: 'top',
+      });
+    }
+    
   }
 
   eliminarRol(){
