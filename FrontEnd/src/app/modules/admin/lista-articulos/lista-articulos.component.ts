@@ -37,6 +37,11 @@ import { Validators } from 'ngx-editor';
 import { AngularEditorModule } from '@kolkov/angular-editor';
 import { HttpClientModule } from '@angular/common/http';
 
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
 export interface PeriodicElement {
   taskName: string;
   taskID: string;
@@ -285,7 +290,7 @@ export class ListaArticulosComponent {
       estado: element.state,
       referencia: element.referencia,
     });
-    this.parentMessage=element.content;
+    this.parentMessage = element.content;
   }
 
 
@@ -296,7 +301,7 @@ export class ListaArticulosComponent {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  parentMessage:any;
+  parentMessage: any;
   form!: FormGroup;
 
   content: any;
@@ -480,601 +485,93 @@ export class ListaArticulosComponent {
   }
 
   exportToPDF() {
-    let jsonData =
-    {
-      "name": "segmento",
-      "content": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": null
-            },
-            "content": [
-              {
-                "type": "text",
-                "marks": [
-                  {
-                    "type": "strong"
-                  }
-                ],
-                "text": "SECRETARÍA DEGOBIERNO DIGITAL Y TECNOLOGÍAS DE LA INFORMACIÓN Y COMUNICACIONES"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "center"
-            },
-            "content": [
-              {
-                "type": "text",
-                "marks": [
-                  {
-                    "type": "strong"
-                  }
-                ],
-                "text": " "
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "center"
-            },
-            "content": [
-              {
-                "type": "text",
-                "marks": [
-                  {
-                    "type": "strong"
-                  }
-                ],
-                "text": "INFORME DE NECESIDAD"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "center"
-            },
-            "content": [
-              {
-                "type": "text",
-                "marks": [
-                  {
-                    "type": "strong"
-                  }
-                ],
-                "text": "ADQUISICION DE LICENCIAMIENTO PARA LA ADMINISTRACIÓN DE LA SEGURIDAD DE LOS AMBIENTES DE DESARROLLO, PRUEBA Y PRODUCCIÓN DE DMQ."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": " "
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "marks": [
-                  {
-                    "type": "strong"
-                  }
-                ],
-                "text": "1.      ANTECEDENTES"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "La SECRETARÍA DEGOBIERNO DIGITAL Y TECNOLOGÍAS DE LA INFORMACIÓN Y COMUNICACIONES fue creada, a través de Resolución Nro. AQ 050-2022 de 08 de noviembre de 2022, y tiene como misión “Dirigir y coordinar la gestión de los proyectos y servicios de tecnología de información garantizando la integridad, disponibilidad, optimización de recursos, sistematización de los procesos institucionales del Municipio del distrito Metropolitano de Quito”."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Mediante resolución Nro. ADMQ 022-2023, de 14 de noviembre de 2023, el señor Alcalde Metropolitano, resolvió expedir la Estructura Organizacional del Gobierno Autónomo Descentralizado del Distrito Metropolitano de Quito. En el artículo 1 de la resolución en mención, se estableció como proceso adjetivo de nivel de asesoría a esta dependencia, con la denominación de “Secretaría de Gobierno Digital y Tecnologías de la Información y Comunicaciones”, integrada por las siguientes Direcciones:"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": " "
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Dirección Metropolitana de Sistemas de Información y Servicios Tecnológicos."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Dirección Metropolitana de Proyectos Tecnológicos."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Dirección Metropolitana de Infraestructura y Seguridad de TIC."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Dirección Metropolitana de Gobierno Digital."
-              },
-              {
-                "type": "text",
-                "marks": [
-                  {
-                    "type": "link",
-                    "attrs": {
-                      "href": "#_msocom_1",
-                      "title": null,
-                      "target": null
-                    }
-                  }
-                ],
-                "text": "[OIRM1]"
-              },
-              {
-                "type": "text",
-                "text": " "
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": " "
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "La SECRETARÍA DEGOBIERNO DIGITAL Y TECNOLOGÍAS DE LA INFORMACIÓN Y COMUNICACIONES, a través de la Dirección Metropolitana de Sistemas de Información y Servicios Tecnológicos tiene como misión “Gestionar los sistemas de información y los servicios tecnológicos del GAD del Distrito Metropolitano de Quito, que permitan brindar soluciones tecnológicas, a través de su análisis, implementación y mantenimiento asegurando su interoperabilidad.”"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": " "
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": " "
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Durante el presente año, la Secretaría de Gobierno Digital y Tecnologías de la Información y Comunicaciones (SGDTIC) del Distrito Metropolitano de Quito (DMQ) ha experimentado un incremento significativo en la demanda por servicios digitales que no solo sean accesibles, sino también eficientes. Este incremento subraya la importancia crítica de adoptar soluciones tecnológicas avanzadas que permitan una integración y gestión efectiva de los distintos sistemas tecnológicos existentes en el DMQ."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": " "
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Conscientes de esta necesidad, se ha tomado la decisión de implementar herramientas de vanguardia, entre ellas, un orquestador de contenedores. Esta elección busca optimizar el rendimiento y la disponibilidad de los servicios digitales, proporcionando una infraestructura tecnológica que facilite la interconexión fluida entre las diversas plataformas y sistemas."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": " "
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "La adopción de estas soluciones avanzadas es crucial para garantizar una administración eficaz y segura de los sistemas con arquitecturas modernas en el DMQ. Además, estas herramientas están diseñadas para mejorar significativamente la experiencia de los usuarios, asegurando que los servicios digitales se mantengan no solo a la vanguardia de la tecnología, sino también alineados con las necesidades cambiantes de la población."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": " "
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "Actualmente, la SGDTIC reconoce la falta de herramientas especializadas que faciliten la orquestación de sistemas de alta disponibilidad. Por ello, la implementación de un orquestador de contenedores se presenta como una solución estratégica para superar estos desafíos, marcando un paso adelante en la transformación digital y la eficiencia operativa del DMQ."
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": " "
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": " "
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "marks": [
-                  {
-                    "type": "strong"
-                  }
-                ],
-                "text": "2.      BASE LEGAL"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "marks": [
-                  {
-                    "type": "text_color",
-                    "attrs": {
-                      "color": "black"
-                    }
-                  }
-                ],
-                "text": "La Constitución de la República del Ecuador en su artículo 288 "
-              },
-              {
-                "type": "text",
-                "marks": [
-                  {
-                    "type": "em"
-                  },
-                  {
-                    "type": "text_color",
-                    "attrs": {
-                      "color": "black"
-                    }
-                  }
-                ],
-                "text": "“Las compras públicas cumplirán con criterios de eficiencia, transparencia, calidad, responsabilidad ambiental y social. Se priorizarán los productos y servicios nacionales, en particular los provenientes de la economía popular y solidaria, y de las micro, pequeñas y medianas unidades productivas.”"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "marks": [
-                  {
-                    "type": "text_color",
-                    "attrs": {
-                      "color": "black"
-                    }
-                  }
-                ],
-                "text": " "
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "marks": [
-                  {
-                    "type": "text_color",
-                    "attrs": {
-                      "color": "black"
-                    }
-                  }
-                ],
-                "text": "La Ley Orgánica del Sistema Nacional de Contratación Pública en sus artículos pertinentes preceptúa:"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "marks": [
-                  {
-                    "type": "text_color",
-                    "attrs": {
-                      "color": "black"
-                    }
-                  }
-                ],
-                "text": " "
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": "justify"
-            },
-            "content": [
-              {
-                "type": "text",
-                "marks": [
-                  {
-                    "type": "em"
-                  }
-                ],
-                "text": "“Art. 23.-Estudios. - Antes de iniciar un procedimiento precontractual, de acuerdo a la naturaleza de la contratación, la entidad deberá contar con los estudios y diseños completos, definitivos y actualizados, planos y cálculos, especificaciones técnicas, debidamente aprobados por las instancias correspondientes, vinculados al Plan Anual de Contratación de la entidad.”"
-              }
-            ]
-          },
-          {
-            "type": "horizontal_rule"
-          },
-          {
-            "type": "paragraph",
-            "attrs": {
-              "align": null
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": " "
-              },
-              {
-                "type": "text",
-                "marks": [
-                  {
-                    "type": "link",
-                    "attrs": {
-                      "href": "#_msoanchor_1",
-                      "title": null,
-                      "target": null
-                    }
-                  }
-                ],
-                "text": "[OIRM1]"
-              },
-              {
-                "type": "text",
-                "text": "Verificar atribuciones y competencias de conformidad a la resolución 007 2024."
-              }
-            ]
-          }
-        ]
-      },
-      "state": "activo",
-      "children": []
-    };
-
-    this.exportPDF(jsonData);
+    let jsonData = this.dataSource.data;
+    console.log(jsonData);
+    this.exportToPDFImport(jsonData);
   }
 
-  exportPDF(jsonData: any) {
-    const htmlContent = this.jsonToHTML(jsonData);
-    const container = document.createElement('div');
-    container.innerHTML = htmlContent;
-    document.body.appendChild(container);
+  exportToPDFImport(jsonData: any) {
+    const docDefinition = this.jsonToDocDefinition(jsonData);
+    pdfMake.createPdf(docDefinition).download("download.pdf");
+  }
 
-    html2canvas(container).then(canvas => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgProps = pdf.getImageProperties(imgData);
+  jsonToDocDefinition(jsonData: any) {
+    let content: any = [];
 
-      // Margen deseado en milímetros
-      const margin = 10; // Por ejemplo, 10 mm de margen
-
-      // Dimensiones ajustadas para incluir el margen
-      const pdfWidth = pdf.internal.pageSize.getWidth() - (margin * 2);
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      // Verificar si la altura ajustada con el ancho y el margen excede la altura de la página
-      const pageHeight = pdf.internal.pageSize.getHeight() - (margin * 2); // Altura de la página ajustada para los márgenes superior e inferior
-      const finalPdfHeight = pdfHeight > pageHeight ? pageHeight : pdfHeight; // Usar la menor de las dos alturas
-
-      // Añadir la imagen al PDF con margen
-      pdf.addImage(imgData, 'PNG', margin, margin, pdfWidth, finalPdfHeight);
-
-      pdf.save("download.pdf");
-
-      // Opcional: Elimina el contenedor para limpiar el DOM
-      document.body.removeChild(container);
+    jsonData.forEach((segment: any) => {
+      if (segment.content && segment.content.type === 'doc' && segment.content.content) {
+        content = content.concat(this.processContent(segment.content.content));
+      }
     });
 
+    return { content };
   }
 
-  jsonToHTML(jsonData: any) {
-    let htmlContent = `<h1 style="text-align:center;">${jsonData.name}</h1>`;
+  processContent(contentArray: any[]) {
+    let result: any[] = [];
 
-    if (jsonData.content && jsonData.content.content && jsonData.content.content.forEach) {
-      jsonData.content.content.forEach((paragraph: any) => {
-        let align = paragraph.attrs && paragraph.attrs.align ? paragraph.attrs.align : 'left';
-        htmlContent += `<p style="text-align: ${align};">`;
+    contentArray.forEach((item: any) => {
+      if (item.type === 'paragraph') {
+        result.push(this.processParagraph(item));
+      } else if (item.type === 'ordered_list') {
+        result.push(this.processOrderedList(item));
+      } else if (item.type === 'bullet_list') {
+        result.push(this.processBulletList(item));
+      } else if (item.type === 'blockquote') {
+        result.push(this.processParagraph(item)); // Manejar como párrafo por simplicidad
+      }
+    });
 
-        if (paragraph.content && paragraph.content.forEach) {
-          paragraph.content.forEach((part: any) => {
-            let textStyle = '';
-            if (part.marks && part.marks.forEach) {
-              part.marks.forEach((mark: any) => {
-                if (mark.type === 'strong') textStyle += '<strong>';
-                if (mark.type === 'em') textStyle += '<em>';
-                // Agrega aquí más comprobaciones para otros estilos
-              });
-            }
-            let textEndStyle = textStyle.replace(/<strong>/g, '</strong>').replace(/<em>/g, '</em>'); // Cierra las etiquetas
-            htmlContent += `${textStyle}${part.text}${textEndStyle}`;
+    return result;
+  }
+
+  processParagraph(paragraph: any) {
+    if (!paragraph.content) return {}; // Comprobación adicional para evitar errores
+
+    let paragraphItems = paragraph.content.map((item: any) => {
+      if (item.type === 'text') {
+        let textBlock: any = { text: item.text };
+
+        if (item.marks) {
+          item.marks.forEach((mark: any) => {
+            if (mark.type === 'strong') textBlock.bold = true;
+            if (mark.type === 'em') textBlock.italics = true;
+            if (mark.type === 'u') textBlock.decoration = 'underline';
+            if (mark.type === 's') textBlock.decoration = 'lineThrough';
+            if (mark.type === 'link') textBlock.link = mark.attrs.href;
+            if (mark.type === 'text_color') textBlock.color = mark.attrs.color;
+            if (mark.type === 'text_background_color') textBlock.backgroundColor = mark.attrs.backgroundColor;
           });
         }
 
-        htmlContent += `</p>`;
-      });
-    }
+        return textBlock;
+      }
+    });
 
-    return htmlContent;
+    return {
+      text: paragraphItems,
+      alignment: paragraph.attrs?.align || 'left', // Comprobación condicional de attrs
+      margin: [0, 0, 0, 20] // Margen inferior
+    };
   }
 
+  processOrderedList(list: any) {
+    return {
+      ol: list.content.map((item: any) => this.processListItem(item)),
+      margin: [0, 0, 0, 20]
+    };
+  }
+
+  processBulletList(list: any) {
+    return {
+      ul: list.content.map((item: any) => this.processListItem(item)),
+      margin: [0, 0, 0, 20]
+    };
+  }
+
+  processListItem(item: any) {
+    return this.processContent(item.content);
+  }
 
   exportToDocx() {
     let jsonData = {
@@ -1706,40 +1203,40 @@ export class ListaArticulosComponent {
     console.log(this.form.value);
     console.log(this.content);
  */
-    let objeto:Node = {
-      name:this.form.value.titulo,
-      content:this.content,
-      state:this.form.value.estado,
-      referencia:this.form.value.referencia,
-      children:this.contenidoSeleccionado.children,
-      id:this.contenidoSeleccionado.id,
-      id_padre:this.contenidoSeleccionado.id_padre
+    let objeto: Node = {
+      name: this.form.value.titulo,
+      content: this.content,
+      state: this.form.value.estado,
+      referencia: this.form.value.referencia,
+      children: this.contenidoSeleccionado.children,
+      id: this.contenidoSeleccionado.id,
+      id_padre: this.contenidoSeleccionado.id_padre
     }
 
     /* if (this.form.valid && this.content) { */
-      //actualizar
-      if (this.contenidoSeleccionado.id_padre != null) {
-        this.articuloService.update(objeto, this.contenidoSeleccionado.id_padre,  this.contenidoSeleccionado.id).subscribe({
-          next: ((resp:any)=>{
-            console.log(resp);
-          }),
-          error:((err:any)=>{
-            console.log(err);
-          })
+    //actualizar
+    if (this.contenidoSeleccionado.id_padre != null) {
+      this.articuloService.update(objeto, this.contenidoSeleccionado.id_padre, this.contenidoSeleccionado.id).subscribe({
+        next: ((resp: any) => {
+          console.log(resp);
+        }),
+        error: ((err: any) => {
+          console.log(err);
         })
-      }else{
-        this.articuloService.update(objeto, this.contenidoSeleccionado.id,  this.contenidoSeleccionado.id).subscribe({
-          next: ((resp:any)=>{
-            console.log(resp);
-          }),
-          error:((err:any)=>{
-            console.log(err);
-          })
+      })
+    } else {
+      this.articuloService.update(objeto, this.contenidoSeleccionado.id, this.contenidoSeleccionado.id).subscribe({
+        next: ((resp: any) => {
+          console.log(resp);
+        }),
+        error: ((err: any) => {
+          console.log(err);
         })
-      }
-      
+      })
     }
- /*  } */
+
+  }
+  /*  } */
 
 
 }

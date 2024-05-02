@@ -19,14 +19,12 @@
 
                 </mat-card-subtitle>
                 <mat-card-subtitle>
-                    <span class="material-symbols-outlined">
-                        download
-                    </span>
-                    <button type="button" mat-button class="card-header-menu-btn p-0"
+                    
+                    <button type="button" mat-button class="card-header-menu-btn"
                         [matMenuTriggerFor]="cardHeaderMenu">
-                        <i class="material-symbols-outlined">
-                            more_horiz
-                        </i>
+                        <span class="material-symbols-outlined">
+                            download
+                        </span>
                     </button>
                     <mat-menu #cardHeaderMenu="matMenu" class="card-header-menu" xPosition="before">
                         <button mat-menu-item (click)="exportToPDF()">
