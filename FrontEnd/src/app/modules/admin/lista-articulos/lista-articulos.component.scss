@@ -949,11 +949,13 @@
     text-align: left; // Puedes ajustar la alineación del texto si es necesario
 }
 
-.column-60 {
-    width: 60px; // Ancho específico
-    max-width: 60px; // Limita el ancho
-    white-space: normal; // Permite que el texto salte a nuevas líneas
-    overflow-wrap: break-word; // Ajusta el texto para evitar desbordamientos
-    text-overflow: ellipsis; // Muestra puntos suspensivos si el texto excede el espacio
-    word-break: break-word; // Divide el texto para evitar desbordamientos
+
+
+.mat-column-contenido{
+    width: 100% !important; // Ancho específico
+    max-width: 60px !important; // Limita el ancho
+    white-space: normal !important; // Permite que el texto salte a nuevas líneas
+    overflow-wrap: break-word !important; // Ajusta el texto para evitar desbordamientos
+    text-overflow: ellipsis !important; // Muestra puntos suspensivos si el texto excede el espacio
+    word-break: break-word !important; // Divide el texto para evitar desbordamientos
 }
