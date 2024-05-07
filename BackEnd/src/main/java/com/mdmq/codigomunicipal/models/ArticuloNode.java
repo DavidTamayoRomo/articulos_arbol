@@ -24,6 +24,7 @@ public class ArticuloNode {
     private Boolean isVisible;
     private Boolean isExpanded;
     private String id_padre;
+    private String content_transform;
 
     // Getters y setters
 }
