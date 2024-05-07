@@ -51,7 +51,9 @@
                                 </th>
                                 <td mat-cell *matCellDef="let element">
                                     <strong>{{element.name}}</strong> <br>
-                                    {{element.content | textFromObject}}
+                                    <!-- {{element.content | textFromObject}}<br> -->
+                                    {{element.content_transform}}
+                                    <span [innerHTML]="element.content_transform | highlight:input.value"></span><br>
                                     <br><br><!-- TODO: Ver la forma de buscar con la transformacion -->
                                     Referencia: <a (click)="abrirLink(element?.referencia)">{{element?.referencia}}</a>
                                 </td>
@@ -126,7 +128,7 @@
                 </mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-                {{contenidoSeleccionado?.content}}
+                {{contenidoSeleccionado?.content_transform}}
 
             </mat-card-content>
             <mat-card-footer *hasRole="['Administrador']">

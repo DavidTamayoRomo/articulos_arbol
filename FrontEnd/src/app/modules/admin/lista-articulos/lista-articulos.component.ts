@@ -45,6 +45,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import * as fs from 'file-saver';
 import Docxtemplater from 'docxtemplater';
 import JSZip from 'jszip';
+import { HighlightPipe } from '../../../highlight.pipe';
 
 export interface PeriodicElement {
   taskName: string;
@@ -226,6 +227,7 @@ interface Node {
   id_padre?: string | undefined;
   name: string;
   content?: string;
+  content_transform?: string;
   state?: string;
   referencia?: string;
   children?: Node[];
@@ -247,7 +249,7 @@ interface CategoriaNode {
     MatCardModule, MatMenuModule, MatButtonModule, RouterLink, MatTableModule, NgIf, MatCheckboxModule,
     MatTooltipModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, MatNativeDateModule, MatPaginatorModule,
     RouterLinkActive, MatProgressBarModule, EditorsComponent, MatDialogModule, TwNestedNodesComponent, ReactiveFormsModule, MatTreeModule, HasRoleDirective, RouterModule,
-    TextFromObjectPipe
+    TextFromObjectPipe, HighlightPipe
   ]
 })
 export class ListaArticulosComponent {

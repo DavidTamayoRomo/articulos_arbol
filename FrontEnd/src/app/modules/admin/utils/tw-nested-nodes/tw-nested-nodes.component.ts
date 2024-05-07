@@ -15,6 +15,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { EditorsComponent } from '../editors/editors.component';
 import { HasRoleDirective } from '../../../../directives/has-role.directive';
 import { ArticuloService } from '../../services/articulo.service';
+import { TextFromObjectPipe } from '../../../../text-from-object.pipe';
 
 interface Node {
     id?: string;
@@ -24,6 +25,7 @@ interface Node {
     referencia?: string;
     id_padre?: string;
     children?: Node[];
+    content_transform?:string;
     isVisible?: boolean;
     isExpanded?: boolean;
 }
@@ -172,6 +174,8 @@ export class TwNestedNodesComponent {
 
 
     agregarPadre() {
+        const pipeTextFromObject = new TextFromObjectPipe();
+        console.log(pipeTextFromObject.transform(this.content));
         // Añadir lógica para generar un nuevo nodo
         const nuevoHijo: Node = {
             name: this.form.controls['titulo'].value,
@@ -179,9 +183,11 @@ export class TwNestedNodesComponent {
             state: this.form.controls['estado'].value,
             children: [],
             referencia:this.form.controls['referencia'].value,
+            content_transform:pipeTextFromObject.transform(this.content),
             isVisible:false,
             isExpanded:false
         };
+        console.log(nuevoHijo);
         // actualizamos la fuente de datos para forzar un cambio de detección.
         this.actualizarDatos();
         // No modifiques directamente this.dataSource.data. En su lugar, emite un nuevo valor a través de dataChange
@@ -203,15 +209,17 @@ export class TwNestedNodesComponent {
     }
 
     agregarHijo(node: Node) {
+        const pipeTextFromObject = new TextFromObjectPipe();
         console.log(node);
         console.log(this.datoSeleccionadoGuardar);
         // Añadir lógica para generar un nuevo nodo
         const nuevoHijo: Node = {
             name: this.form.controls['titulo'].value,
             content: this.content,
+            content_transform:pipeTextFromObject.transform(this.content),
             state: this.form.controls['estado'].value,
             children: [],
-            referencia:"",
+            referencia:this.form.controls['referencia'].value,
             isVisible:false,
             isExpanded:false
         };
