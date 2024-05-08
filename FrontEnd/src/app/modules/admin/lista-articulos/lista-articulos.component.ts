@@ -759,6 +759,7 @@ export class ListaArticulosComponent {
 
   handleEditorContentChanged(content: string) {
     this.content = content;
+    console.log(content);
   }
 
   editar() {
@@ -766,31 +767,56 @@ export class ListaArticulosComponent {
     console.log(this.form.value);
     console.log(this.content);
   */
+    const pipeTextFromObject = new TextFromObjectPipe();
     let objeto: Node = {
       name: this.form.value.titulo,
       content: this.content,
+      content_transform: pipeTextFromObject.transform(this.content),
       state: this.form.value.estado,
       referencia: this.form.value.referencia,
       children: this.contenidoSeleccionado.children,
       id: this.contenidoSeleccionado.id,
       id_padre: this.contenidoSeleccionado.id_padre
     }
-
+    console.log(pipeTextFromObject.transform(this.content));
+    console.log(objeto);
     /* if (this.form.valid && this.content) { */
     //actualizar
     if (this.contenidoSeleccionado.id_padre != null) {
       this.articuloService.update(objeto, this.contenidoSeleccionado.id_padre, this.contenidoSeleccionado.id).subscribe({
         next: ((resp: any) => {
           console.log(resp);
+          this.toggleClass1();
+          this.articuloService.getArticulos().subscribe({
+            next: (data: any) => {
+              console.log(data);
+              console.log(this.buildCompleteList(data));//TODO: Verificar xq no se actualiza
+              this.dataSource.data = this.buildCompleteList(data);
+              this.dataSource.paginator = this.paginator;
+            },
+            error: (err) => { console.log("Error al cargar los Artículos") }
+          });
+
+
         }),
         error: ((err: any) => {
           console.log(err);
         })
       })
     } else {
+      console.log(this.contenidoSeleccionado);
       this.articuloService.update(objeto, this.contenidoSeleccionado.id, this.contenidoSeleccionado.id).subscribe({
         next: ((resp: any) => {
-          console.log(resp);
+          this.toggleClass1();
+          this.articuloService.getArticulos().subscribe({
+            next: (data: any) => {
+              console.log(data);
+              console.log(this.buildCompleteList(data));//TODO: Verificar xq no se actualiza
+              this.dataSource.data = this.buildCompleteList(data);
+              this.dataSource.paginator = this.paginator;
+            },
+            error: (err) => { console.log("Error al cargar los Artículos") }
+          });
         }),
         error: ((err: any) => {
           console.log(err);

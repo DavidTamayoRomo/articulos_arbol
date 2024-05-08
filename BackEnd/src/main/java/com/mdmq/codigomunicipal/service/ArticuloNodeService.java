@@ -114,7 +114,6 @@ public class ArticuloNodeService {
     
         if (parent.getId().equals(updatedNode.getId())) {
             // Si el nodo padre es el nodo actualizado, no se requiere acción adicional
-            //parent = updatedNode;
             parent.setChildren(updatedNode.getChildren());
             parent.setContent(updatedNode.getContent());
             parent.setContent_transform(updatedNode.getContent_transform());

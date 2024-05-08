@@ -25,6 +25,12 @@
     padding-left: 40px;
 }
 
+.example-tree{
+    max-height: 600px;  /* Ajusta esta altura según las necesidades de tu interfaz */
+    overflow-y: auto;   /* Habilita el desplazamiento vertical */
+    overflow-x: auto; /* Opcional: Oculta el desplazamiento horizontal */
+}
+
 .node-name {
     cursor: pointer;
 }
@@ -484,6 +490,8 @@
     &.daxa-card {
         &.sidebar-card {
             .mat-mdc-card-content {
+                
+
                 .search-box {
                     margin-bottom: 20px;
 

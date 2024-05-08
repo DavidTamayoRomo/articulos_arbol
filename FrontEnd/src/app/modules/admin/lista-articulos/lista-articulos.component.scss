@@ -959,3 +959,9 @@
     text-overflow: ellipsis !important; // Muestra puntos suspensivos si el texto excede el espacio
     word-break: break-word !important; // Divide el texto para evitar desbordamientos
 }
+
+.table-responsive{
+    max-height: 600px;  /* Ajusta esta altura según las necesidades de tu interfaz */
+    overflow-y: auto;   /* Habilita el desplazamiento vertical */
+    overflow-x: hidden; /* Opcional: Oculta el desplazamiento horizontal */
+}
