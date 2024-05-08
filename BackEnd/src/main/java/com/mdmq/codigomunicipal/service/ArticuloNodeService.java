@@ -1,6 +1,7 @@
 package com.mdmq.codigomunicipal.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -113,6 +114,19 @@ public class ArticuloNodeService {
     
         if (parent.getId().equals(updatedNode.getId())) {
             // Si el nodo padre es el nodo actualizado, no se requiere acción adicional
+            //parent = updatedNode;
+            parent.setChildren(updatedNode.getChildren());
+            parent.setContent(updatedNode.getContent());
+            parent.setContent_transform(updatedNode.getContent_transform());
+            parent.setFecha_creacion(updatedNode.getFecha_creacion());
+            parent.setFecha_modificacion(new Date());
+            parent.setId(updatedNode.getId());
+            parent.setId_padre(updatedNode.getId_padre());
+            parent.setIsExpanded(updatedNode.getIsExpanded());
+            parent.setIsVisible(updatedNode.getIsVisible());
+            parent.setName(updatedNode.getName());
+            parent.setReferencia(updatedNode.getReferencia());
+            parent.setState(updatedNode.getState());
             return;
         }
     

@@ -1,5 +1,6 @@
 package com.mdmq.codigomunicipal.models;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -25,6 +26,10 @@ public class ArticuloNode {
     private Boolean isExpanded;
     private String id_padre;
     private String content_transform;
+    private String usuario_creacion;
+    private String usuario_modificacion;
+    private Date fecha_creacion = new Date();
+    private Date fecha_modificacion = new Date();
 
     // Getters y setters
 }
