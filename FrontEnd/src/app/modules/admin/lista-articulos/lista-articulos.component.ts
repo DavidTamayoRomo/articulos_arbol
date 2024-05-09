@@ -46,6 +46,7 @@ import * as fs from 'file-saver';
 import Docxtemplater from 'docxtemplater';
 import JSZip from 'jszip';
 import { HighlightPipe } from '../../../highlight.pipe';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export interface PeriodicElement {
   taskName: string;
@@ -320,7 +321,9 @@ export class ListaArticulosComponent {
     public articuloService: ArticuloService,
     private keycloakauthService: KeycloakAuthService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private _snackBar: MatSnackBar
+
   ) {
     this.themeService.isToggled$.subscribe(isToggled => {
       this.isToggled = isToggled;
@@ -711,7 +714,8 @@ export class ListaArticulosComponent {
   }
 
   abrirHistorial() {
-    this.router.navigate(['/admin/contenido'])
+    console.log(this.contenidoSeleccionado);
+    this.router.navigate(['/admin/contenido', this.contenidoSeleccionado.id] );
   }
 
   handleVisibleNodes(visibleNodes: Node[]) {
@@ -785,6 +789,10 @@ export class ListaArticulosComponent {
     if (this.contenidoSeleccionado.id_padre != null) {
       this.articuloService.update(objeto, this.contenidoSeleccionado.id_padre, this.contenidoSeleccionado.id).subscribe({
         next: ((resp: any) => {
+          this._snackBar.open('El registro seleccionado se actualizó con éxito', 'Cerrar', {
+            horizontalPosition: 'right',
+            verticalPosition: 'top',
+          });
           console.log(resp);
           this.toggleClass1();
           this.articuloService.getArticulos().subscribe({
@@ -807,6 +815,10 @@ export class ListaArticulosComponent {
       console.log(this.contenidoSeleccionado);
       this.articuloService.update(objeto, this.contenidoSeleccionado.id, this.contenidoSeleccionado.id).subscribe({
         next: ((resp: any) => {
+          this._snackBar.open('El registro seleccionado se actualizó con éxito', 'Cerrar', {
+            horizontalPosition: 'right',
+            verticalPosition: 'top',
+          });
           this.toggleClass1();
           this.articuloService.getArticulos().subscribe({
             next: (data: any) => {
@@ -827,5 +839,68 @@ export class ListaArticulosComponent {
   }
   /*  } */
 
+
+  cambiarEstado(element:any){
+    const pipeTextFromObject = new TextFromObjectPipe();
+    let objeto: Node = {
+      name: element.name,
+      content: element.content,
+      content_transform: pipeTextFromObject.transform(element.content),
+      state: "Derogado",
+      referencia: element.referencia,
+      children: element.children,
+      id: element.id,
+      id_padre: element.id_padre
+    }
+    console.log(objeto);
+    /* if (this.form.valid && this.content) { */
+    //actualizar
+    if (element.id_padre != null) {
+      this.articuloService.update(objeto, element.id_padre, element.id).subscribe({
+        next: ((resp: any) => {
+          console.log(resp);
+          this._snackBar.open('El registro seleccionado se actualizó con éxito', 'Cerrar', {
+            horizontalPosition: 'right',
+            verticalPosition: 'top',
+          });
+          this.articuloService.getArticulos().subscribe({
+            next: (data: any) => {
+              console.log(data);
+              console.log(this.buildCompleteList(data));//TODO: Verificar xq no se actualiza
+              this.dataSource.data = this.buildCompleteList(data);
+              this.dataSource.paginator = this.paginator;
+            },
+            error: (err) => { console.log("Error al cargar los Artículos") }
+          });
+
+
+        }),
+        error: ((err: any) => {
+          console.log(err);
+        })
+      })
+    } else {
+      this.articuloService.update(objeto, element.id, element.id).subscribe({
+        next: ((resp: any) => {
+          this.articuloService.getArticulos().subscribe({
+            next: (data: any) => {
+              this._snackBar.open('El registro seleccionado se actualizó con éxito', 'Cerrar', {
+                horizontalPosition: 'right',
+                verticalPosition: 'top',
+              });
+              console.log(data);
+              console.log(this.buildCompleteList(data));//TODO: Verificar xq no se actualiza
+              this.dataSource.data = this.buildCompleteList(data);
+              this.dataSource.paginator = this.paginator;
+            },
+            error: (err) => { console.log("Error al cargar los Artículos") }
+          });
+        }),
+        error: ((err: any) => {
+          console.log(err);
+        })
+      })
+    }
+  }
 
 }

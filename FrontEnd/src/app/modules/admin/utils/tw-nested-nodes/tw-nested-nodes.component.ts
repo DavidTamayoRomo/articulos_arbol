@@ -16,6 +16,7 @@ import { EditorsComponent } from '../editors/editors.component';
 import { HasRoleDirective } from '../../../../directives/has-role.directive';
 import { ArticuloService } from '../../services/articulo.service';
 import { TextFromObjectPipe } from '../../../../text-from-object.pipe';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 interface Node {
     id?: string;
@@ -25,7 +26,7 @@ interface Node {
     referencia?: string;
     id_padre?: string;
     children?: Node[];
-    content_transform?:string;
+    content_transform?: string;
     isVisible?: boolean;
     isExpanded?: boolean;
 }
@@ -60,7 +61,8 @@ export class TwNestedNodesComponent {
     private fb = inject(FormBuilder);
     constructor(
         public themeService: CustomizerSettingsService,
-        public articuloService: ArticuloService
+        public articuloService: ArticuloService,
+        private _snackBar: MatSnackBar
     ) {
 
     }
@@ -76,7 +78,7 @@ export class TwNestedNodesComponent {
 
     }
 
-    obtenerTodos(){
+    obtenerTodos() {
         this.articuloService.getArticulos().subscribe({
             next: (data: any) => {
                 console.log(data);
@@ -109,7 +111,7 @@ export class TwNestedNodesComponent {
             const visibleNodes = this.getVisibleNodes(this.dataSource.data);
             console.log("Nodos visibles tras la búsqueda:", visibleNodes); // Imprimir los nodos visibles
             //Enviar al componente los visibles
-            this.NodoSeleccionado.emit(visibleNodes); 
+            this.NodoSeleccionado.emit(visibleNodes);
         } else {
             this.articuloService.getArticulos().subscribe({
                 next: (data: any) => {
@@ -182,10 +184,10 @@ export class TwNestedNodesComponent {
             content: this.content,
             state: this.form.controls['estado'].value,
             children: [],
-            referencia:this.form.controls['referencia'].value,
-            content_transform:pipeTextFromObject.transform(this.content),
-            isVisible:false,
-            isExpanded:false
+            referencia: this.form.controls['referencia'].value,
+            content_transform: pipeTextFromObject.transform(this.content),
+            isVisible: false,
+            isExpanded: false
         };
         console.log(nuevoHijo);
         // actualizamos la fuente de datos para forzar un cambio de detección.
@@ -197,7 +199,11 @@ export class TwNestedNodesComponent {
 
         //guardar base de datos
         this.articuloService.createArticulo(nuevoHijo).subscribe({
-            next: (resp:any) => {
+            next: (resp: any) => {
+                this._snackBar.open('El registro se guardo con éxito', 'Cerrar', {
+                    horizontalPosition: 'right',
+                    verticalPosition: 'top',
+                });
                 console.log(resp);
                 this.banderaPadre = false;
                 this.obtenerTodos();
@@ -216,12 +222,12 @@ export class TwNestedNodesComponent {
         const nuevoHijo: Node = {
             name: this.form.controls['titulo'].value,
             content: this.content,
-            content_transform:pipeTextFromObject.transform(this.content),
+            content_transform: pipeTextFromObject.transform(this.content),
             state: this.form.controls['estado'].value,
             children: [],
-            referencia:this.form.controls['referencia'].value,
-            isVisible:false,
-            isExpanded:false
+            referencia: this.form.controls['referencia'].value,
+            isVisible: false,
+            isExpanded: false
         };
         if (!node.children) {
             node.children = [];
@@ -235,9 +241,13 @@ export class TwNestedNodesComponent {
 
 
         //guardar base de datos
-        if(this.datoSeleccionadoGuardar?.id_padre == null){
-            this.articuloService.createHijos(nuevoHijo,this.datoSeleccionadoGuardar?.id, this.datoSeleccionadoGuardar?.id).subscribe({
-                next: (resp:any) => {
+        if (this.datoSeleccionadoGuardar?.id_padre == null) {
+            this.articuloService.createHijos(nuevoHijo, this.datoSeleccionadoGuardar?.id, this.datoSeleccionadoGuardar?.id).subscribe({
+                next: (resp: any) => {
+                    this._snackBar.open('El registro se guardo con éxito', 'Cerrar', {
+                        horizontalPosition: 'right',
+                        verticalPosition: 'top',
+                    });
                     console.log(resp);
                     this.obtenerTodos();
                 },
@@ -245,9 +255,9 @@ export class TwNestedNodesComponent {
                     console.log('Error al guardar');
                 }
             });
-        }else{
-            this.articuloService.createHijos(nuevoHijo,this.datoSeleccionadoGuardar?.id_padre, this.datoSeleccionadoGuardar?.id).subscribe({
-                next: (resp:any) => {
+        } else {
+            this.articuloService.createHijos(nuevoHijo, this.datoSeleccionadoGuardar?.id_padre, this.datoSeleccionadoGuardar?.id).subscribe({
+                next: (resp: any) => {
                     console.log(resp);
                     this.obtenerTodos();
                 },
@@ -256,7 +266,7 @@ export class TwNestedNodesComponent {
                 }
             });
         }
-        
+
     }
 
     private actualizarDatos() {
@@ -288,12 +298,12 @@ export class TwNestedNodesComponent {
 
     guardarNodo() {
         console.log(this.datoSeleccionado);
-        if(this.banderaPadre){
+        if (this.banderaPadre) {
             this.agregarPadre();
-        }else{
+        } else {
             this.agregarHijo(this.datoSeleccionado);
         }
-        
+
     }
 
     handleEditorContentChanged(content: string) {
@@ -303,7 +313,7 @@ export class TwNestedNodesComponent {
 
     getVisibleNodes(nodes: Node[]): Node[] {
         const visibleNodes: Node[] = [];
-    
+
         const traverseNodes = (nodes: Node[]) => {
             nodes.forEach(node => {
                 if (node.isVisible) {
@@ -314,14 +324,14 @@ export class TwNestedNodesComponent {
                 }
             });
         };
-    
+
         traverseNodes(nodes);
-    
+
         return visibleNodes;
     }
 
 
-    crearArticulo(banderaPadre:boolean){
+    crearArticulo(banderaPadre: boolean) {
         this.banderaPadre = banderaPadre;
         this.toggleClass();
     }

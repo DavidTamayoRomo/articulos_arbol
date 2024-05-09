@@ -16,7 +16,7 @@ export const ADMIN_ROUTES: Routes = [
         component:ListaArticulosComponent
       },
       {
-        path:'contenido',
+        path:'contenido/:id',
         component:ContenidoComponent
       },
       {
