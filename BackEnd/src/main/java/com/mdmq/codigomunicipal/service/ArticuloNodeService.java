@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mdmq.codigomunicipal.models.ArticuloNode;
+import com.mdmq.codigomunicipal.models.Historial;
 import com.mdmq.codigomunicipal.repository.ArticuloNodeRepository;
 
 @Service
@@ -16,11 +17,14 @@ public class ArticuloNodeService {
     private final ArticuloNodeRepository repository;
 
     @Autowired
+    private HistorialService historialService;
+
+    @Autowired
     public ArticuloNodeService(ArticuloNodeRepository repository) {
         this.repository = repository;
     }
 
-    public List<ArticuloNode> findAll(  ) {
+    public List<ArticuloNode> findAll() {
         return repository.findAll();
     }
 
@@ -29,7 +33,30 @@ public class ArticuloNodeService {
     }
 
     public ArticuloNode save(ArticuloNode articuloNode) {
-        return repository.save(articuloNode);
+        ArticuloNode articulo = repository.save(articuloNode);
+        Historial historial = new Historial();
+        historial.setChildren(articulo.getChildren());
+        historial.setContent(articulo.getContent());
+        historial.setContent_transform(articulo.getContent_transform());
+        historial.setFecha_creacion(articulo.getFecha_creacion());
+        historial.setFecha_modificacion(articulo.getFecha_modificacion());
+        historial.setIdArticulo(articulo.getId());
+        historial.setId_padre(articulo.getId_padre());
+        historial.setIsExpanded(articulo.getIsExpanded());
+        historial.setIsVisible(articulo.getIsVisible());
+        historial.setName(articulo.getName());
+        historial.setReferencia(articulo.getReferencia());
+        historial.setState(articulo.getState());
+
+        historialService.save(historial);
+
+        return articulo;
+    }
+
+    public ArticuloNode saveChildrent(ArticuloNode articuloNode) {
+        ArticuloNode articulo = repository.save(articuloNode);
+
+        return articulo;
     }
 
     public void deleteById(String id) {
@@ -41,24 +68,6 @@ public class ArticuloNodeService {
         return node.orElse(null);
     }
 
-    /* public void addChild(String parentId, ArticuloNode child) {
-        ArticuloNode parent = findByIdNode(parentId);
-        if (parent != null) {
-            if (parent.getChildren() == null) {
-                parent.setChildren(new ArrayList<>());
-            }
-            // Primero guarda el hijo para obtener su ID generado por MongoDB
-            ArticuloNode savedChild = save(child);
-            parent.getChildren().add(savedChild);
-            save(parent); // Guarda el padre actualizado
-
-            //borrar el hijo creado
-            deleteById(savedChild.getId());
-        }
-    }
- */
-
-   
     public ArticuloNode addChild(String parentId, String targetId, ArticuloNode child) {
         ArticuloNode parent = findByIdNode(parentId);
         if (parent == null) {
@@ -71,19 +80,34 @@ public class ArticuloNodeService {
             }
             child.setId_padre(parentId);
             // Primero guarda el hijo para obtener su ID generado por MongoDB
-            ArticuloNode savedChild = save(child);
+            ArticuloNode savedChild = saveChildrent(child);
             foundNode.getChildren().add(savedChild);
-            //Al nodo parent, agregarle el  nuevo nodo como hijo de foundNode
+            // Al nodo parent, agregarle el nuevo nodo como hijo de foundNode
             updateNodeInParent(parent, foundNode);
 
-            save(parent); // Guarda el padre actualizado
+            saveChildrent(parent); // Guarda el padre actualizado
 
-            //borrar el hijo creado
+            Historial historialUpdate = new Historial();
+            historialUpdate.setChildren(savedChild.getChildren());
+            historialUpdate.setContent(savedChild.getContent());
+            historialUpdate.setContent_transform(savedChild.getContent_transform());
+            historialUpdate.setFecha_creacion(savedChild.getFecha_creacion());
+            historialUpdate.setFecha_modificacion(savedChild.getFecha_modificacion());
+            historialUpdate.setIdArticulo(savedChild.getId());
+            historialUpdate.setId_padre(savedChild.getId_padre());
+            historialUpdate.setIsExpanded(savedChild.getIsExpanded());
+            historialUpdate.setIsVisible(savedChild.getIsVisible());
+            historialUpdate.setName(savedChild.getName());
+            historialUpdate.setReferencia(savedChild.getReferencia());
+            historialUpdate.setState(savedChild.getState());
+
+            historialService.save(historialUpdate);
+
+            // borrar el hijo creado
             deleteById(savedChild.getId());
         }
         return foundNode;
     }
-
 
     public ArticuloNode findNodeByIdFromParent(ArticuloNode root, String targetId) {
         if (root == null) {
@@ -106,12 +130,11 @@ public class ArticuloNodeService {
         return null;
     }
 
-
     private void updateNodeInParent(ArticuloNode parent, ArticuloNode updatedNode) {
         if (parent == null || updatedNode == null) {
             return;
         }
-    
+
         if (parent.getId().equals(updatedNode.getId())) {
             // Si el nodo padre es el nodo actualizado, no se requiere acción adicional
             parent.setChildren(updatedNode.getChildren());
@@ -128,11 +151,11 @@ public class ArticuloNodeService {
             parent.setState(updatedNode.getState());
             return;
         }
-    
+
         if (parent.getChildren() != null) {
             for (int i = 0; i < parent.getChildren().size(); i++) {
                 ArticuloNode child = parent.getChildren().get(i);
-    
+
                 if (child.getId().equals(updatedNode.getId())) {
                     // Reemplaza el nodo hijo con el nodo actualizado
                     parent.getChildren().set(i, updatedNode);
@@ -145,26 +168,40 @@ public class ArticuloNodeService {
         }
     }
 
-
-
     public ArticuloNode updateChildNodeById(String parentId, String childId, ArticuloNode updatedChild) {
         // Encuentra el nodo padre
         ArticuloNode parent = findByIdNode(parentId);
         if (parent == null) {
             throw new IllegalArgumentException("Nodo padre no encontrado con ID: " + parentId);
         }
-    
+
         // Encuentra el nodo hijo específico en el nodo padre
         ArticuloNode foundChild = findNodeByIdFromParent(parent, childId);
         if (foundChild == null) {
             throw new IllegalArgumentException("Nodo hijo no encontrado con ID: " + childId);
         }
-    
+
         // Reemplaza el nodo hijo con el nodo actualizado
         updateNodeInParent(parent, updatedChild);
-    
+
         // Guarda el nodo padre actualizado
-        save(parent);
+        saveChildrent(parent);
+
+        Historial historialUpdatePadreHijos = new Historial();
+        historialUpdatePadreHijos.setChildren(updatedChild.getChildren());
+        historialUpdatePadreHijos.setContent(updatedChild.getContent());
+        historialUpdatePadreHijos.setContent_transform(updatedChild.getContent_transform());
+        historialUpdatePadreHijos.setFecha_creacion(updatedChild.getFecha_creacion());
+        historialUpdatePadreHijos.setFecha_modificacion(updatedChild.getFecha_modificacion());
+        historialUpdatePadreHijos.setIdArticulo(updatedChild.getId());
+        historialUpdatePadreHijos.setId_padre(updatedChild.getId_padre());
+        historialUpdatePadreHijos.setIsExpanded(updatedChild.getIsExpanded());
+        historialUpdatePadreHijos.setIsVisible(updatedChild.getIsVisible());
+        historialUpdatePadreHijos.setName(updatedChild.getName());
+        historialUpdatePadreHijos.setReferencia(updatedChild.getReferencia());
+        historialUpdatePadreHijos.setState(updatedChild.getState());
+
+        historialService.save(historialUpdatePadreHijos);
 
         return parent;
     }
