@@ -5,11 +5,12 @@ import { MatMenuModule } from '@angular/material/menu';
 import { RouterLink } from '@angular/router';
 import { CustomizerSettingsService } from '../../../../common/customizer-settings/customizer-settings.service';
 import { CommonModule } from '@angular/common';
+import { HasRoleDirective } from '../../../../directives/has-role.directive';
 
 @Component({
     selector: 'app-advance',
     standalone: true,
-    imports: [RouterLink, MatCardModule, MatButtonModule, MatMenuModule, CommonModule],
+    imports: [RouterLink, MatCardModule, MatButtonModule, MatMenuModule, CommonModule, HasRoleDirective],
     templateUrl: './advance.component.html',
     styleUrl: './advance.component.scss'
 })

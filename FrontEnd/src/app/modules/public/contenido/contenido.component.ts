@@ -8,11 +8,12 @@ import { HeaderComponent } from '../../../common/header/header.component';
 import { SidebarComponent } from '../../../common/sidebar/sidebar.component';
 import { CustomizerSettingsService } from '../../../common/customizer-settings/customizer-settings.service';
 import { ToggleService } from '../../../common/sidebar/toggle.service';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-contenido',
   standalone: true,
-  imports: [ListaArticulosComponent, CommonModule, RouterOutlet, SidebarComponent, HeaderComponent, FooterComponent, RouterLink, CustomizerSettingsComponent],
+  imports: [ListaArticulosComponent, CommonModule, RouterOutlet, SidebarComponent, HeaderComponent, FooterComponent, RouterLink, CustomizerSettingsComponent, MatCardModule],
   templateUrl: './contenido.component.html',
   styleUrl: './contenido.component.scss'
 })

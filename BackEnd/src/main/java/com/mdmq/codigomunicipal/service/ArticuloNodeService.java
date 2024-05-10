@@ -47,6 +47,10 @@ public class ArticuloNodeService {
         historial.setName(articulo.getName());
         historial.setReferencia(articulo.getReferencia());
         historial.setState(articulo.getState());
+        historial.setFecha_creacion(articulo.getFecha_creacion());
+        historial.setFecha_modificacion(articulo.getFecha_modificacion());
+        historial.setUsuario_creacion(articulo.getUsuario_creacion());
+        historial.setUsuario_modificacion(articulo.getUsuario_modificacion());
 
         historialService.save(historial);
 
@@ -100,6 +104,10 @@ public class ArticuloNodeService {
             historialUpdate.setName(savedChild.getName());
             historialUpdate.setReferencia(savedChild.getReferencia());
             historialUpdate.setState(savedChild.getState());
+            historialUpdate.setFecha_creacion(savedChild.getFecha_creacion());
+            historialUpdate.setFecha_modificacion(savedChild.getFecha_modificacion());
+            historialUpdate.setUsuario_creacion(savedChild.getUsuario_creacion());
+            historialUpdate.setUsuario_modificacion(savedChild.getUsuario_modificacion());
 
             historialService.save(historialUpdate);
 
@@ -149,6 +157,10 @@ public class ArticuloNodeService {
             parent.setName(updatedNode.getName());
             parent.setReferencia(updatedNode.getReferencia());
             parent.setState(updatedNode.getState());
+            parent.setFecha_creacion(updatedNode.getFecha_creacion());
+            parent.setFecha_modificacion(updatedNode.getFecha_modificacion());
+            parent.setUsuario_creacion(updatedNode.getUsuario_creacion());
+            parent.setUsuario_modificacion(updatedNode.getUsuario_modificacion());
             return;
         }
 
@@ -200,7 +212,10 @@ public class ArticuloNodeService {
         historialUpdatePadreHijos.setName(updatedChild.getName());
         historialUpdatePadreHijos.setReferencia(updatedChild.getReferencia());
         historialUpdatePadreHijos.setState(updatedChild.getState());
-
+        historialUpdatePadreHijos.setFecha_creacion(updatedChild.getFecha_creacion());
+        historialUpdatePadreHijos.setFecha_modificacion(updatedChild.getFecha_modificacion());
+        historialUpdatePadreHijos.setUsuario_creacion(updatedChild.getUsuario_creacion());
+        historialUpdatePadreHijos.setUsuario_modificacion(updatedChild.getUsuario_modificacion());
         historialService.save(historialUpdatePadreHijos);
 
         return parent;

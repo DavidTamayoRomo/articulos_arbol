@@ -17,6 +17,7 @@ import { HasRoleDirective } from '../../../../directives/has-role.directive';
 import { ArticuloService } from '../../services/articulo.service';
 import { TextFromObjectPipe } from '../../../../text-from-object.pipe';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { KeycloakAuthService } from '../../../../auth/services/keycloak-auth.service';
 
 interface Node {
     id?: string;
@@ -29,6 +30,10 @@ interface Node {
     content_transform?: string;
     isVisible?: boolean;
     isExpanded?: boolean;
+    usuario_creacion?: string;
+    fecha_creacion?: Date;
+    usuario_modificacion?: string;
+    fecha_modificacion?: Date;
 }
 
 
@@ -62,7 +67,8 @@ export class TwNestedNodesComponent {
     constructor(
         public themeService: CustomizerSettingsService,
         public articuloService: ArticuloService,
-        private _snackBar: MatSnackBar
+        private _snackBar: MatSnackBar,
+        private keycloakauthService: KeycloakAuthService,
     ) {
 
     }
@@ -176,6 +182,10 @@ export class TwNestedNodesComponent {
 
 
     agregarPadre() {
+
+        let datosKeycloak: any = this.keycloakauthService.getLoggedUser();
+        let usuarioCreacion: any = datosKeycloak.preferred_username;
+
         const pipeTextFromObject = new TextFromObjectPipe();
         console.log(pipeTextFromObject.transform(this.content));
         // Añadir lógica para generar un nuevo nodo
@@ -187,7 +197,9 @@ export class TwNestedNodesComponent {
             referencia: this.form.controls['referencia'].value,
             content_transform: pipeTextFromObject.transform(this.content),
             isVisible: false,
-            isExpanded: false
+            isExpanded: false,
+            fecha_creacion: new Date(),
+            usuario_creacion: usuarioCreacion
         };
         console.log(nuevoHijo);
         // actualizamos la fuente de datos para forzar un cambio de detección.
@@ -215,6 +227,8 @@ export class TwNestedNodesComponent {
     }
 
     agregarHijo(node: Node) {
+        let datosKeycloak: any = this.keycloakauthService.getLoggedUser();
+        let usuarioCreacion: any = datosKeycloak.preferred_username;
         const pipeTextFromObject = new TextFromObjectPipe();
         console.log(node);
         console.log(this.datoSeleccionadoGuardar);
@@ -227,7 +241,9 @@ export class TwNestedNodesComponent {
             children: [],
             referencia: this.form.controls['referencia'].value,
             isVisible: false,
-            isExpanded: false
+            isExpanded: false,
+            fecha_creacion: new Date(),
+            usuario_creacion: usuarioCreacion
         };
         if (!node.children) {
             node.children = [];

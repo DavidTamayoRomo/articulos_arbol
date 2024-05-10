@@ -14,8 +14,8 @@
                     <h5>
                         {{articulo?.name}}
                     </h5>
-                    <span class="assigned-to d-block text-body">
-                        <span class="text-black fw-medium">Modificado por:</span> {{articulo?.usuario_creacion}}
+                    <span class="assigned-to d-block text-body" *hasRole="['Administrador']">
+                        <span class="text-black fw-medium">Modificado por:</span> {{articulo?.usuario_modificacion==null?articulo?.usuario_creacion:articulo?.usuario_modificacion}}
                     </span>
                     <span class="description d-block">
                         Contenido:

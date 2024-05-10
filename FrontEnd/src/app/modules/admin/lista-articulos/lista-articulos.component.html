@@ -65,7 +65,7 @@
                                 </td>
                             </ng-container>
 
-                            <ng-container matColumnDef="action" *hasRole="['Administrador']">
+                            <ng-container matColumnDef="action" >
                                 <th mat-header-cell *matHeaderCellDef>
                                     Action
                                 </th>
@@ -76,12 +76,12 @@
                                                 visibility
                                             </i>
                                         </button>
-                                        <button type="button" mat-button matTooltip="Edit" matTooltipPosition="above">
+                                        <button type="button" mat-button matTooltip="Edit" matTooltipPosition="above" *hasRole="['Administrador']"> 
                                             <i class="material-symbols-outlined" (click)="abrirEditar(element)">
                                                 edit
                                             </i>
                                         </button>
-                                        <button type="button" mat-button matTooltip="Delete" matTooltipPosition="above">
+                                        <button type="button" mat-button matTooltip="Delete" matTooltipPosition="above" *hasRole="['Administrador']">
                                             <i class="material-symbols-outlined" (click)="cambiarEstado(element)">
                                                 delete
                                             </i>
@@ -128,7 +128,7 @@
                 {{contenidoSeleccionado?.content_transform}}
 
             </mat-card-content>
-            <mat-card-footer *hasRole="['Administrador']">
+            <mat-card-footer >
                 <div class="row">
                     <div class="col-3">
 

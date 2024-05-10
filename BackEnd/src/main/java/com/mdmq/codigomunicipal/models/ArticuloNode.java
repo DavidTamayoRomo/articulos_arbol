@@ -28,8 +28,8 @@ public class ArticuloNode {
     private String content_transform;
     private String usuario_creacion;
     private String usuario_modificacion;
-    private Date fecha_creacion = new Date();
-    private Date fecha_modificacion = new Date();
+    private Date fecha_creacion;
+    private Date fecha_modificacion;
 
     // Getters y setters
 }

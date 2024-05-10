@@ -1,0 +1,25 @@
+<div  [class.dark-theme]="themeService.isDark()"
+    [class.card-borderd-theme]="themeService.isCardBorder()"
+    [class.card-border-radius]="themeService.isCardBorderRadius()" [class.rtl-enabled]="themeService.isRTLEnabled()">
+
+    <div class="main-content transition d-flex flex-column" [ngClass]="{'active': isSidebarToggled}"
+        [class.right-sidebar]="themeService.isRightSidebar()" [class.hide-sidebar]="true">
+        <app-header></app-header>
+        
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-10" style="padding-top: 100px;">
+                <mat-card class="daxa-card to-do-list-card mb-25 border-radius bg-white border-none d-block">
+                    <mat-card-content>
+                        <app-advance [listaCambios]="listaCambios"></app-advance>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+            
+        </div>
+        <app-footer></app-footer>
+    </div>
+    
+</div>
+
+

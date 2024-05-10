@@ -234,6 +234,10 @@ interface Node {
   children?: Node[];
   isVisible?: boolean;
   isExpanded?: boolean;
+  usuario_creacion?: string;
+  fecha_creacion?: Date;
+  usuario_modificacion?: string;
+  fecha_modificacion?: Date;
 }
 
 interface CategoriaNode {
@@ -337,7 +341,7 @@ export class ListaArticulosComponent {
       if (this.keycloakauthService.getRoles().includes('Administrador')) {
         this.displayedColumns = ['contenido', 'estado', 'action'];
       } else {
-        this.displayedColumns = ['contenido'];
+        this.displayedColumns = ['contenido', 'action'];
       }
     } else {
       this.displayedColumns = ['titulo', 'contenido', 'estado'];
@@ -715,7 +719,13 @@ export class ListaArticulosComponent {
 
   abrirHistorial() {
     console.log(this.contenidoSeleccionado);
-    this.router.navigate(['/admin/contenido', this.contenidoSeleccionado.id] );
+    console.log(this.keycloakauthService.getRoles());
+    if (this.keycloakauthService.getRoles().length>0) {
+      this.router.navigate(['/admin/contenido', this.contenidoSeleccionado.id] );
+    }else{
+      this.router.navigate(['/historial', this.contenidoSeleccionado.id] );
+    }
+    
   }
 
   handleVisibleNodes(visibleNodes: Node[]) {
@@ -771,6 +781,9 @@ export class ListaArticulosComponent {
     console.log(this.form.value);
     console.log(this.content);
   */
+    let datosKeycloak: any = this.keycloakauthService.getLoggedUser();
+    let usuarioCreacion: any = datosKeycloak.preferred_username;
+
     const pipeTextFromObject = new TextFromObjectPipe();
     let objeto: Node = {
       name: this.form.value.titulo,
@@ -780,7 +793,11 @@ export class ListaArticulosComponent {
       referencia: this.form.value.referencia,
       children: this.contenidoSeleccionado.children,
       id: this.contenidoSeleccionado.id,
-      id_padre: this.contenidoSeleccionado.id_padre
+      id_padre: this.contenidoSeleccionado.id_padre,
+      fecha_modificacion:new Date(),
+      usuario_modificacion:usuarioCreacion,
+      fecha_creacion:this.contenidoSeleccionado.fecha_creacion,
+      usuario_creacion:this.contenidoSeleccionado.usuario_creacion
     }
     console.log(pipeTextFromObject.transform(this.content));
     console.log(objeto);
@@ -841,6 +858,8 @@ export class ListaArticulosComponent {
 
 
   cambiarEstado(element:any){
+    let datosKeycloak: any = this.keycloakauthService.getLoggedUser();
+    let usuarioCreacion: any = datosKeycloak.preferred_username;
     const pipeTextFromObject = new TextFromObjectPipe();
     let objeto: Node = {
       name: element.name,
@@ -850,7 +869,11 @@ export class ListaArticulosComponent {
       referencia: element.referencia,
       children: element.children,
       id: element.id,
-      id_padre: element.id_padre
+      id_padre: element.id_padre,
+      fecha_modificacion:new Date(),
+      usuario_modificacion:usuarioCreacion,
+      fecha_creacion:element.fecha_creacion,
+      usuario_creacion:element.usuario_creacion
     }
     console.log(objeto);
     /* if (this.form.valid && this.content) { */
