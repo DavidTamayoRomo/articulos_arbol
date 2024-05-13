@@ -18,6 +18,7 @@ import { ArticuloService } from '../../services/articulo.service';
 import { TextFromObjectPipe } from '../../../../text-from-object.pipe';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { KeycloakAuthService } from '../../../../auth/services/keycloak-auth.service';
+import { DataService } from '../../services/data.service';
 
 interface Node {
     id?: string;
@@ -69,18 +70,25 @@ export class TwNestedNodesComponent {
         public articuloService: ArticuloService,
         private _snackBar: MatSnackBar,
         private keycloakauthService: KeycloakAuthService,
+        private dataService: DataService
     ) {
 
     }
-
+    message: string;
     ngOnInit(): void {
         this.form = this.fb.group({
             titulo: [null, [Validators.required]],
-            contenido: [null, [Validators.required]],
+            contenido: [null],
             estado: [null, [Validators.required]],
             referencia: [null],
         });
         this.obtenerTodos();
+
+        this.dataService.currentMessage.subscribe(message => {
+            this.message = message;
+            console.log(this.message);
+            this.obtenerTodos();
+        });
 
     }
 
@@ -206,24 +214,33 @@ export class TwNestedNodesComponent {
         this.actualizarDatos();
         // No modifiques directamente this.dataSource.data. En su lugar, emite un nuevo valor a través de dataChange
         this.dataChange.next(this.dataSource.data);
-        this.classApplied = !this.classApplied;
 
 
-        //guardar base de datos
-        this.articuloService.createArticulo(nuevoHijo).subscribe({
-            next: (resp: any) => {
-                this._snackBar.open('El registro se guardo con éxito', 'Cerrar', {
-                    horizontalPosition: 'right',
-                    verticalPosition: 'top',
-                });
-                console.log(resp);
-                this.banderaPadre = false;
-                this.obtenerTodos();
-            },
-            error: err => {
-                console.log('Error al guardar');
-            }
-        });
+
+        if (this.content && this.form.valid) {
+            //guardar base de datos
+            this.articuloService.createArticulo(nuevoHijo).subscribe({
+                next: (resp: any) => {
+                    this._snackBar.open('El registro se guardo con éxito', 'Cerrar', {
+                        horizontalPosition: 'right',
+                        verticalPosition: 'top',
+                    });
+                    this.classApplied = !this.classApplied;
+                    console.log(resp);
+                    this.banderaPadre = false;
+                    this.obtenerTodos();
+                },
+                error: err => {
+                    console.log('Error al guardar');
+                }
+            });
+        } else {
+            this._snackBar.open('Completar todos los campos obligatorios', 'Cerrar', {
+                horizontalPosition: 'right',
+                verticalPosition: 'top',
+            });
+        }
+
     }
 
     agregarHijo(node: Node) {
@@ -253,35 +270,44 @@ export class TwNestedNodesComponent {
         this.actualizarDatos();
         // No modifiques directamente this.dataSource.data. En su lugar, emite un nuevo valor a través de dataChange
         this.dataChange.next(this.dataSource.data);
-        this.classApplied = !this.classApplied;
 
 
-        //guardar base de datos
-        if (this.datoSeleccionadoGuardar?.id_padre == null) {
-            this.articuloService.createHijos(nuevoHijo, this.datoSeleccionadoGuardar?.id, this.datoSeleccionadoGuardar?.id).subscribe({
-                next: (resp: any) => {
-                    this._snackBar.open('El registro se guardo con éxito', 'Cerrar', {
-                        horizontalPosition: 'right',
-                        verticalPosition: 'top',
-                    });
-                    console.log(resp);
-                    this.obtenerTodos();
-                },
-                error: err => {
-                    console.log('Error al guardar');
-                }
-            });
+        if (this.content && this.form.valid) {
+            //guardar base de datos
+            this.classApplied = !this.classApplied;
+            //guardar base de datos
+            if (this.datoSeleccionadoGuardar?.id_padre == null) {
+                this.articuloService.createHijos(nuevoHijo, this.datoSeleccionadoGuardar?.id, this.datoSeleccionadoGuardar?.id).subscribe({
+                    next: (resp: any) => {
+                        this._snackBar.open('El registro se guardo con éxito', 'Cerrar', {
+                            horizontalPosition: 'right',
+                            verticalPosition: 'top',
+                        });
+                        console.log(resp);
+                        this.obtenerTodos();
+                    },
+                    error: err => {
+                        console.log('Error al guardar');
+                    }
+                });
+            } else {
+                this.articuloService.createHijos(nuevoHijo, this.datoSeleccionadoGuardar?.id_padre, this.datoSeleccionadoGuardar?.id).subscribe({
+                    next: (resp: any) => {
+                        console.log(resp);
+                        this.obtenerTodos();
+                    },
+                    error: err => {
+                        console.log('Error al guardar');
+                    }
+                });
+            }
         } else {
-            this.articuloService.createHijos(nuevoHijo, this.datoSeleccionadoGuardar?.id_padre, this.datoSeleccionadoGuardar?.id).subscribe({
-                next: (resp: any) => {
-                    console.log(resp);
-                    this.obtenerTodos();
-                },
-                error: err => {
-                    console.log('Error al guardar');
-                }
+            this._snackBar.open('Completar todos los campos obligatorios', 'Cerrar', {
+                horizontalPosition: 'right',
+                verticalPosition: 'top',
             });
         }
+
 
     }
 
@@ -350,8 +376,13 @@ export class TwNestedNodesComponent {
     crearArticulo(banderaPadre: boolean) {
         this.banderaPadre = banderaPadre;
         this.toggleClass();
+        this.borrarForm();
     }
 
+
+    borrarForm() {
+        this.form.reset();
+    }
 
 
 }

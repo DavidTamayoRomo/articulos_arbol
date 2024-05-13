@@ -1,6 +1,5 @@
 import { NgIf } from '@angular/common';
 import { Component, ViewChild, inject } from '@angular/core';
-
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
@@ -25,203 +24,21 @@ import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeModule, MatTreeNestedDataSource } from '@angular/material/tree';
 import { ArbolService } from '../services/arbol.service';
 import { ArticuloService } from '../services/articulo.service';
-
 import { saveAs } from 'file-saver';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { Document, Paragraph, TextRun, Packer, AlignmentType, UnderlineType } from "docx";
 import { HasRoleDirective } from '../../../directives/has-role.directive';
 import { KeycloakAuthService } from '../../../auth/services/keycloak-auth.service';
 import { TextFromObjectPipe } from "../../../text-from-object.pipe";
 import { Validators } from 'ngx-editor';
-import { AngularEditorModule } from '@kolkov/angular-editor';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-
+import { HttpClient } from '@angular/common/http';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { HighlightPipe } from '../../../highlight.pipe';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { DataService } from '../services/data.service';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-import * as fs from 'file-saver';
-import Docxtemplater from 'docxtemplater';
-import JSZip from 'jszip';
-import { HighlightPipe } from '../../../highlight.pipe';
-import { MatSnackBar } from '@angular/material/snack-bar';
-
-export interface PeriodicElement {
-  taskName: string;
-  taskID: string;
-  assignedTo: string;
-  dueDate: string;
-  priority: string;
-  status: any;
-  action: any;
-}
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  {
-    taskID: '#951',
-    taskName: 'Hotel management system',
-    assignedTo: 'Shawn Kennedy',
-    dueDate: '15 Nov, 2024',
-    priority: 'High',
-    status: {
-      inProgress: 'In Progress',
-      // pending: 'Pending',
-      // completed: 'Completed',
-      // notStarted: 'Not Started',
-    },
-    action: {
-      view: 'visibility',
-      edit: 'edit',
-      delete: 'delete'
-    }
-  },
-  {
-    taskID: '#587',
-    taskName: 'Send proposal to APR Ltd',
-    assignedTo: 'Roberto Cruz',
-    dueDate: '14 Nov, 2024',
-    priority: 'Medium',
-    status: {
-      // inProgress: 'In Progress',
-      pending: 'Pending',
-      // completed: 'Completed',
-      // notStarted: 'Not Started',
-    },
-    action: {
-      view: 'visibility',
-      edit: 'edit',
-      delete: 'delete'
-    }
-  },
-  {
-    taskID: '#618',
-    taskName: 'Python upgrade',
-    assignedTo: 'Juli Johnson',
-    dueDate: '13 Nov, 2024',
-    priority: 'High',
-    status: {
-      // inProgress: 'In Progress',
-      // pending: 'Pending',
-      completed: 'Completed',
-      // notStarted: 'Not Started',
-    },
-    action: {
-      view: 'visibility',
-      edit: 'edit',
-      delete: 'delete'
-    }
-  },
-  {
-    taskID: '#367',
-    taskName: 'Schedule meeting with Daxa',
-    assignedTo: 'Catalina Engles',
-    dueDate: '12 Nov, 2024',
-    priority: 'Low',
-    status: {
-      // inProgress: 'In Progress',
-      // pending: 'Pending',
-      // completed: 'Completed',
-      notStarted: 'Not Started',
-    },
-    action: {
-      view: 'visibility',
-      edit: 'edit',
-      delete: 'delete'
-    }
-  },
-  {
-    taskID: '#761',
-    taskName: 'Engineering lite touch',
-    assignedTo: 'Louis Nagle',
-    dueDate: '11 Nov, 2024',
-    priority: 'Medium',
-    status: {
-      inProgress: 'In Progress',
-      // pending: 'Pending',
-      // completed: 'Completed',
-      // notStarted: 'Not Started',
-    },
-    action: {
-      view: 'visibility',
-      edit: 'edit',
-      delete: 'delete'
-    }
-  },
-  {
-    taskID: '#431',
-    taskName: 'Refund bill payment',
-    assignedTo: 'Michael Marquez',
-    dueDate: '10 Nov, 2024',
-    priority: 'Low',
-    status: {
-      // inProgress: 'In Progress',
-      // pending: 'Pending',
-      // completed: 'Completed',
-      notStarted: 'Not Started',
-    },
-    action: {
-      view: 'visibility',
-      edit: 'edit',
-      delete: 'delete'
-    }
-  },
-  {
-    taskID: '#421',
-    taskName: 'Public beta release',
-    assignedTo: 'James Andy',
-    dueDate: '09 Nov, 2024',
-    priority: 'High',
-    status: {
-      inProgress: 'In Progress',
-      // pending: 'Pending',
-      // completed: 'Completed',
-      // notStarted: 'Not Started',
-    },
-    action: {
-      view: 'visibility',
-      edit: 'edit',
-      delete: 'delete'
-    }
-  },
-  {
-    taskID: '#624',
-    taskName: 'Fix platform errors',
-    assignedTo: 'Alina Smith',
-    dueDate: '08 Nov, 2024',
-    priority: 'Medium',
-    status: {
-      // inProgress: 'In Progress',
-      // pending: 'Pending',
-      completed: 'Completed',
-      // notStarted: 'Not Started',
-    },
-    action: {
-      view: 'visibility',
-      edit: 'edit',
-      delete: 'delete'
-    }
-  },
-  {
-    taskID: '#513',
-    taskName: 'Launch our mobile app',
-    assignedTo: 'David Warner',
-    dueDate: '07 Nov, 2024',
-    priority: 'Low',
-    status: {
-      // inProgress: 'In Progress',
-      pending: 'Pending',
-      // completed: 'Completed',
-      // notStarted: 'Not Started',
-    },
-    action: {
-      view: 'visibility',
-      edit: 'edit',
-      delete: 'delete'
-    }
-  }
-];
 
 interface Node {
   id?: string;
@@ -238,11 +55,6 @@ interface Node {
   fecha_creacion?: Date;
   usuario_modificacion?: string;
   fecha_modificacion?: Date;
-}
-
-interface CategoriaNode {
-  nombre: string;
-  children?: CategoriaNode[];
 }
 
 @Component({
@@ -268,9 +80,6 @@ export class ListaArticulosComponent {
   selection = new SelectionModel<Node>(true, []);
 
   treeControl = new NestedTreeControl<Node>((node) => node.children);
-
-  dataSource1 = new MatTreeNestedDataSource<CategoriaNode>();
-  addNodeForm: FormGroup;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   // isToggled
@@ -325,8 +134,8 @@ export class ListaArticulosComponent {
     public articuloService: ArticuloService,
     private keycloakauthService: KeycloakAuthService,
     private router: Router,
-    private http: HttpClient,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private dataService: DataService
 
   ) {
     this.themeService.isToggled$.subscribe(isToggled => {
@@ -346,35 +155,17 @@ export class ListaArticulosComponent {
     } else {
       this.displayedColumns = ['titulo', 'contenido', 'estado'];
     }
-    /*  this.displayedColumns = ['titulo', 'contenido', 'estado', 'action']; */
     this.articuloService.getArticulos().subscribe({
       next: (data: any) => {
-        console.log(data);
         this.dataSource.data = this.buildCompleteList(data);
       },
       error: (err) => { console.log("Error al cargar los Artículos") }
     });
 
-    this.dataSource1.data = [
-      {
-        nombre: 'Tecnología',
-        children: [
-          {
-            nombre: 'Programación',
-            children: [{ nombre: 'Bases de Datos', children: [] }],
-          },
-        ],
-      },
-    ];
-
-    this.addNodeForm = this.fb.group({
-      nombre: '',
-      padre: '',
-    });
 
     this.form = this.fb.group({
       titulo: [null, [Validators.required]],
-      contenido: [null, [Validators.required]],
+      contenido: [null],
       estado: [null, [Validators.required]],
       referencia: [null],
     });
@@ -386,15 +177,8 @@ export class ListaArticulosComponent {
   }
 
 
-  guardar() {
-    /* console.log(this.form.value);
-    console.log(this.form); */
-  }
-
-
   hasChild = (_: number, node: Node) =>
     !!node.children && node.children.length > 0;
-
 
 
   exportToCSV() {
@@ -500,7 +284,6 @@ export class ListaArticulosComponent {
 
   exportToPDF() {
     let jsonData = this.dataSource.data;
-    console.log(jsonData);
     this.exportToPDFImport(jsonData);
   }
 
@@ -533,10 +316,52 @@ export class ListaArticulosComponent {
         result.push(this.processBulletList(item));
       } else if (item.type === 'blockquote') {
         result.push(this.processParagraph(item)); // Manejar como párrafo por simplicidad
+      } else if (item.type === 'heading') {
+        result.push(this.processHeading(item));
       }
     });
 
     return result;
+  }
+
+  processHeading(heading: any) {
+    if (!heading.content) return {}; // Comprobación adicional para evitar errores
+
+    let headingItems = heading.content.map((item: any) => {
+      if (item.type === 'text') {
+        let textBlock: any = { text: item.text };
+
+        if (item.marks) {
+          item.marks.forEach((mark: any) => {
+            if (mark.type === 'strong') textBlock.bold = true;
+            if (mark.type === 'em') textBlock.italics = true;
+            if (mark.type === 'u') textBlock.decoration = 'underline';
+            if (mark.type === 's') textBlock.decoration = 'lineThrough';
+            if (mark.type === 'link') {
+              textBlock.link = mark.attrs.href;
+              textBlock.text = `<a href="${textBlock.link}">${textBlock.text}</a>`;  // Consider using HTML here only if necessary
+            }
+            if (mark.type === 'text_color') textBlock.color = mark.attrs.color;
+            if (mark.type === 'text_background_color') textBlock.backgroundColor = mark.attrs.backgroundColor;
+          });
+        }
+
+        return textBlock;
+      }
+      return null;
+    }).filter((item: any) => item !== null);  // Filter out any null items
+
+    // Determine header level and apply respective style
+    const level = heading.attrs.level || 1;
+    const tag = `h${Math.min(level, 6)}`;  // Ensure level is between 1 and 6
+
+    return {
+      text: headingItems,
+      tag: tag,
+      alignment: heading.attrs?.align || 'left', // Conditional check of alignment attribute
+      margin: [0, 0, 0, 20] // Standard bottom margin
+    };
+
   }
 
   processParagraph(paragraph: any) {
@@ -589,7 +414,6 @@ export class ListaArticulosComponent {
 
   exportToDocx() {
     const jsonData: any = this.jsonToDocDefinition(this.dataSource.data);
-    console.log(jsonData.content);
     const doc = new Document({
       sections: [{
         children: this.createParagraphsFromData(jsonData.content)
@@ -600,9 +424,7 @@ export class ListaArticulosComponent {
       saveAs(blob, 'trabajoMDMQ.docx');
     });
 
-
   }
-
 
   getAlignment(alignment: string) {
     switch (alignment) {
@@ -626,8 +448,7 @@ export class ListaArticulosComponent {
           after: marginAfter,  // Convierte el margen de píxeles a puntos
         }
       });
-      console.log(item);
-      item?.text?.forEach((part:any) => {
+      item?.text?.forEach((part: any) => {
         const textRun = new TextRun({
           text: part.text,
           bold: part.bold || false,
@@ -638,9 +459,9 @@ export class ListaArticulosComponent {
           strike: part.decoration === "lineThrough",
           font: part.font || 'Arial',
           size: part.size || 24, // Tamaño predeterminado de 12pt
-      });
+        });
         paragraph.addChildElement(textRun);
-    });
+      });
 
       return paragraph;
     });
@@ -648,19 +469,10 @@ export class ListaArticulosComponent {
 
   getUnderlineStyle(decoration: string | undefined): { type: any, color?: string } | undefined {
     if (decoration === "underline") {
-        return { type: UnderlineType.SINGLE, color: "auto" };
+      return { type: UnderlineType.SINGLE, color: "auto" };
     }
     return undefined;
-}
-
-  
-
-
-
-
-
-
-
+  }
 
   processContentDoc(content: any) {
     return content.map((item: any) => {
@@ -701,35 +513,20 @@ export class ListaArticulosComponent {
     }).flat();
   }
 
-
-
-
-
-
-
-
-
-
-
-
   openModal(element: Node) {
     this.classApplied = !this.classApplied;
     this.contenidoSeleccionado = element;
   }
 
   abrirHistorial() {
-    console.log(this.contenidoSeleccionado);
-    console.log(this.keycloakauthService.getRoles());
-    if (this.keycloakauthService.getRoles().length>0) {
-      this.router.navigate(['/admin/contenido', this.contenidoSeleccionado.id] );
-    }else{
-      this.router.navigate(['/historial', this.contenidoSeleccionado.id] );
+    if (this.keycloakauthService.getRoles().length > 0) {
+      this.router.navigate(['/admin/contenido', this.contenidoSeleccionado.id]);
+    } else {
+      this.router.navigate(['/historial', this.contenidoSeleccionado.id]);
     }
-    
   }
 
   handleVisibleNodes(visibleNodes: Node[]) {
-    console.log("Recibido:", visibleNodes);
     this.dataSource.data = this.buildCompleteList(visibleNodes);
     console.log("Transforamdo:; ", this.buildCompleteList(visibleNodes));
   }
@@ -776,11 +573,11 @@ export class ListaArticulosComponent {
     console.log(content);
   }
 
+  sendMessage() {
+    this.dataService.changeMessage("Actualizar lista");
+  }
+
   editar() {
-    /* console.log(this.contenidoSeleccionado);
-    console.log(this.form.value);
-    console.log(this.content);
-  */
     let datosKeycloak: any = this.keycloakauthService.getLoggedUser();
     let usuarioCreacion: any = datosKeycloak.preferred_username;
 
@@ -794,70 +591,68 @@ export class ListaArticulosComponent {
       children: this.contenidoSeleccionado.children,
       id: this.contenidoSeleccionado.id,
       id_padre: this.contenidoSeleccionado.id_padre,
-      fecha_modificacion:new Date(),
-      usuario_modificacion:usuarioCreacion,
-      fecha_creacion:this.contenidoSeleccionado.fecha_creacion,
-      usuario_creacion:this.contenidoSeleccionado.usuario_creacion
+      fecha_modificacion: new Date(),
+      usuario_modificacion: usuarioCreacion,
+      fecha_creacion: this.contenidoSeleccionado.fecha_creacion,
+      usuario_creacion: this.contenidoSeleccionado.usuario_creacion
     }
-    console.log(pipeTextFromObject.transform(this.content));
-    console.log(objeto);
-    /* if (this.form.valid && this.content) { */
-    //actualizar
-    if (this.contenidoSeleccionado.id_padre != null) {
-      this.articuloService.update(objeto, this.contenidoSeleccionado.id_padre, this.contenidoSeleccionado.id).subscribe({
-        next: ((resp: any) => {
-          this._snackBar.open('El registro seleccionado se actualizó con éxito', 'Cerrar', {
-            horizontalPosition: 'right',
-            verticalPosition: 'top',
-          });
-          console.log(resp);
-          this.toggleClass1();
-          this.articuloService.getArticulos().subscribe({
-            next: (data: any) => {
-              console.log(data);
-              console.log(this.buildCompleteList(data));//TODO: Verificar xq no se actualiza
-              this.dataSource.data = this.buildCompleteList(data);
-              this.dataSource.paginator = this.paginator;
-            },
-            error: (err) => { console.log("Error al cargar los Artículos") }
-          });
+    if (this.form.valid && this.content) {
+      //actualizar
+      if (this.contenidoSeleccionado.id_padre != null) {
+        this.articuloService.update(objeto, this.contenidoSeleccionado.id_padre, this.contenidoSeleccionado.id).subscribe({
+          next: ((resp: any) => {
+            this._snackBar.open('El registro seleccionado se actualizó con éxito', 'Cerrar', {
+              horizontalPosition: 'right',
+              verticalPosition: 'top',
+            });
+            this.toggleClass1();
+            this.articuloService.getArticulos().subscribe({
+              next: (data: any) => {
+                this.dataSource.data = this.buildCompleteList(data);
+                this.sendMessage();
+              },
+              error: (err) => { console.log("Error al cargar los Artículos") }
+            });
 
 
-        }),
-        error: ((err: any) => {
-          console.log(err);
+          }),
+          error: ((err: any) => {
+            console.log(err);
+          })
         })
-      })
-    } else {
-      console.log(this.contenidoSeleccionado);
-      this.articuloService.update(objeto, this.contenidoSeleccionado.id, this.contenidoSeleccionado.id).subscribe({
-        next: ((resp: any) => {
-          this._snackBar.open('El registro seleccionado se actualizó con éxito', 'Cerrar', {
-            horizontalPosition: 'right',
-            verticalPosition: 'top',
-          });
-          this.toggleClass1();
-          this.articuloService.getArticulos().subscribe({
-            next: (data: any) => {
-              console.log(data);
-              console.log(this.buildCompleteList(data));//TODO: Verificar xq no se actualiza
-              this.dataSource.data = this.buildCompleteList(data);
-              this.dataSource.paginator = this.paginator;
-            },
-            error: (err) => { console.log("Error al cargar los Artículos") }
-          });
-        }),
-        error: ((err: any) => {
-          console.log(err);
+      } else {
+        console.log(this.contenidoSeleccionado);
+        this.articuloService.update(objeto, this.contenidoSeleccionado.id, this.contenidoSeleccionado.id).subscribe({
+          next: ((resp: any) => {
+            this._snackBar.open('El registro seleccionado se actualizó con éxito', 'Cerrar', {
+              horizontalPosition: 'right',
+              verticalPosition: 'top',
+            });
+            this.toggleClass1();
+            this.articuloService.getArticulos().subscribe({
+              next: (data: any) => {
+                this.dataSource.data = this.buildCompleteList(data);
+                this.sendMessage();
+              },
+              error: (err) => { console.log("Error al cargar los Artículos") }
+            });
+          }),
+          error: ((err: any) => {
+            console.log(err);
+          })
         })
-      })
+      }
+    }else{
+      this._snackBar.open('Completar todos los campos obligatorios', 'Cerrar', {
+        horizontalPosition: 'right',
+        verticalPosition: 'top',
+    });
     }
-
   }
   /*  } */
 
 
-  cambiarEstado(element:any){
+  cambiarEstado(element: any) {
     let datosKeycloak: any = this.keycloakauthService.getLoggedUser();
     let usuarioCreacion: any = datosKeycloak.preferred_username;
     const pipeTextFromObject = new TextFromObjectPipe();
@@ -870,10 +665,10 @@ export class ListaArticulosComponent {
       children: element.children,
       id: element.id,
       id_padre: element.id_padre,
-      fecha_modificacion:new Date(),
-      usuario_modificacion:usuarioCreacion,
-      fecha_creacion:element.fecha_creacion,
-      usuario_creacion:element.usuario_creacion
+      fecha_modificacion: new Date(),
+      usuario_modificacion: usuarioCreacion,
+      fecha_creacion: element.fecha_creacion,
+      usuario_creacion: element.usuario_creacion
     }
     console.log(objeto);
     /* if (this.form.valid && this.content) { */

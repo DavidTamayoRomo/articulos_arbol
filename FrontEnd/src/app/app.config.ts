@@ -2,7 +2,7 @@ import { APP_INITIALIZER, ApplicationConfig } from '@angular/core';
 import { PreloadAllModules, provideRouter, withPreloading } from '@angular/router';
 
 import { APP_ROUTES } from './app.routes';
-import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { KeycloakService } from 'keycloak-angular';
 import { initializeKeycloak } from './auth/keycloak.init';
@@ -25,7 +25,6 @@ export const appConfig: ApplicationConfig = {
         provideAnimations(),
         provideRouter(APP_ROUTES, withPreloading(PreloadAllModules)),
         provideHttpClient(withInterceptorsFromDi()),
-        //provideClientHydration(),
         
     ]
 };
