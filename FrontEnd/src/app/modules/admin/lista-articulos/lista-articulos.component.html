@@ -15,8 +15,11 @@
                         <input type="text" class="input-search d-block w-100 border-none outline-0"
                             placeholder="Buscar aqui..." (keyup)="applyFilter($event)" #input>
                     </form>
-
-
+                    <mat-chip-listbox aria-label="Fish selection" [formControl]="chipsControl">
+                        <mat-chip-option value="Todas">Todas</mat-chip-option>
+                        <mat-chip-option value="Activas" color="info">Activas</mat-chip-option>
+                        <mat-chip-option value="Derogadas" color="warn">Derogadas</mat-chip-option>
+                    </mat-chip-listbox>
                 </mat-card-subtitle>
                 <mat-card-subtitle>
                     
@@ -41,6 +44,7 @@
             </mat-card-header>
             <mat-card-content>
                 <div>
+                    
                     <div class="table-responsive">
                         <table mat-table [dataSource]="dataSource">
 

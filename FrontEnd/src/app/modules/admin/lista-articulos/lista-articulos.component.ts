@@ -19,7 +19,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { EditorsComponent } from '../utils/editors/editors.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { TwNestedNodesComponent } from '../utils/tw-nested-nodes/tw-nested-nodes.component';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeModule, MatTreeNestedDataSource } from '@angular/material/tree';
 import { ArbolService } from '../services/arbol.service';
@@ -30,12 +30,12 @@ import { HasRoleDirective } from '../../../directives/has-role.directive';
 import { KeycloakAuthService } from '../../../auth/services/keycloak-auth.service';
 import { TextFromObjectPipe } from "../../../text-from-object.pipe";
 import { Validators } from 'ngx-editor';
-import { HttpClient } from '@angular/common/http';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { HighlightPipe } from '../../../highlight.pipe';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DataService } from '../services/data.service';
+import { MatChipsModule } from '@angular/material/chips';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -66,7 +66,7 @@ interface Node {
     MatCardModule, MatMenuModule, MatButtonModule, RouterLink, MatTableModule, NgIf, MatCheckboxModule,
     MatTooltipModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, MatNativeDateModule, MatPaginatorModule,
     RouterLinkActive, MatProgressBarModule, EditorsComponent, MatDialogModule, TwNestedNodesComponent, ReactiveFormsModule, MatTreeModule, HasRoleDirective, RouterModule,
-    TextFromObjectPipe, HighlightPipe
+    TextFromObjectPipe, HighlightPipe, MatChipsModule
   ]
 })
 export class ListaArticulosComponent {
@@ -168,6 +168,13 @@ export class ListaArticulosComponent {
       contenido: [null],
       estado: [null, [Validators.required]],
       referencia: [null],
+    });
+
+
+    this.chipsControl.valueChanges.subscribe(value => {
+      console.log('Chips have changed:', value);
+      //Realizar el filtro segun valor del CHIP
+      
     });
 
   }
@@ -642,11 +649,11 @@ export class ListaArticulosComponent {
           })
         })
       }
-    }else{
+    } else {
       this._snackBar.open('Completar todos los campos obligatorios', 'Cerrar', {
         horizontalPosition: 'right',
         verticalPosition: 'top',
-    });
+      });
     }
   }
   /*  } */
@@ -720,5 +727,9 @@ export class ListaArticulosComponent {
       })
     }
   }
+
+
+
+  chipsControl = new FormControl(['Chip1', 'Chip2', 'Chip3']);
 
 }
