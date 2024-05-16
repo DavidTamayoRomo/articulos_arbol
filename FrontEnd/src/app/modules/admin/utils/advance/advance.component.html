@@ -20,10 +20,11 @@
                     <span class="description d-block">
                         Contenido:
                     </span>
-                    <div>
-                        {{articulo?.content_transform}}
-                    </div>
-                    <span class="description d-block">Nota: <a href={{articulo?.referencia}}>{{articulo?.referencia}}</a> </span>
+                    <span [innerHTML]="articulo.content_transform"></span><br><br>
+                    Nota: <a [href]="articulo?.referencia" >{{articulo?.referencia}}</a>
+                    
+                    
+                    
                         
                     
                 </div>

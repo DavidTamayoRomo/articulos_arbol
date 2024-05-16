@@ -6,11 +6,12 @@ import { Router, RouterLink, RouterModule } from '@angular/router';
 import { CustomizerSettingsService } from '../../../../common/customizer-settings/customizer-settings.service';
 import { CommonModule } from '@angular/common';
 import { HasRoleDirective } from '../../../../directives/has-role.directive';
+import { HighlightPipe } from '../../../../highlight.pipe';
 
 @Component({
     selector: 'app-advance',
     standalone: true,
-    imports: [RouterModule, MatCardModule, MatButtonModule, MatMenuModule, CommonModule, HasRoleDirective],
+    imports: [RouterModule, MatCardModule, MatButtonModule, MatMenuModule, CommonModule, HasRoleDirective,HighlightPipe],
     templateUrl: './advance.component.html',
     styleUrl: './advance.component.scss'
 })
