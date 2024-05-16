@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment.development';
 
@@ -30,15 +30,27 @@ export class ArticuloService {
     return this.http.get(`${base_url}/articulos`);
   }
 
-  createArticulo(articulo:Node){
+  getArticulosByState(states?: string[]) {
+    let params = new HttpParams();
+    if (states) {
+      states.forEach(state => {
+        params = params.append('states', state);
+      });
+    }
+
+    return this.http.get(`${base_url}/articulos/states`, { params });
+  }
+
+
+  createArticulo(articulo: Node) {
     return this.http.post(`${base_url}/articulos`, articulo);
   }
 
-  createHijos(articulo:Node,id_padre:string, id_hijo:string ){
+  createHijos(articulo: Node, id_padre: string, id_hijo: string) {
     return this.http.post(`${base_url}/articulos/addHijo/${id_padre}/${id_hijo}`, articulo);
   }
-  
-  update(articulo:Node,id_padre:any, id_hijo:any ){
+
+  update(articulo: Node, id_padre: any, id_hijo: any) {
     return this.http.post(`${base_url}/articulos/update/${id_padre}/${id_hijo}`, articulo);
   }
 

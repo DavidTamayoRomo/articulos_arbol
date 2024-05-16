@@ -19,6 +19,7 @@ import { TextFromObjectPipe } from '../../../../text-from-object.pipe';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { KeycloakAuthService } from '../../../../auth/services/keycloak-auth.service';
 import { DataService } from '../../services/data.service';
+import { EstadosService } from '../../services/estados.service';
 
 interface Node {
     id?: string;
@@ -70,7 +71,8 @@ export class TwNestedNodesComponent {
         public articuloService: ArticuloService,
         private _snackBar: MatSnackBar,
         private keycloakauthService: KeycloakAuthService,
-        private dataService: DataService
+        private dataService: DataService,
+        private estadosService: EstadosService
     ) {
 
     }
@@ -82,18 +84,34 @@ export class TwNestedNodesComponent {
             estado: [null, [Validators.required]],
             referencia: [null],
         });
-        this.obtenerTodos();
-
+        //this.obtenerTodos();
+        this.obtenerTodosEstados(['activo'])
         this.dataService.currentMessage.subscribe(message => {
             this.message = message;
             console.log(this.message);
             this.obtenerTodos();
         });
 
+        this.estadosService.currentMessage.subscribe((message:string[])=>{
+            this.obtenerTodosEstados(message);
+        })
+
     }
 
     obtenerTodos() {
         this.articuloService.getArticulos().subscribe({
+            next: (data: any) => {
+                console.log(data);
+                this.dataSource.data = data;
+                this.dataChange.next(data); // Inicializa el BehaviorSubject con los datos del árbol
+                this.dataChange.subscribe(data => this.dataSource.data = data); // Suscríbete a los cambios y actualiza la fuente de datos
+                this.resetTree();
+            },
+            error: (err) => { console.log("Error al cargar los Artículos") }
+        })
+    }
+    obtenerTodosEstados(lista:string[]) {
+        this.articuloService.getArticulosByState(lista).subscribe({
             next: (data: any) => {
                 console.log(data);
                 this.dataSource.data = data;
