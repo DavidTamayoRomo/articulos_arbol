@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,10 @@ public class ArticuloNodeService {
 
     public List<ArticuloNode> findAll() {
         return repository.findAll();
+    }
+    
+    public List<ArticuloNode> findByStateIn(List<String> states) {
+        return repository.findByStateIn(states);
     }
 
     public Optional<ArticuloNode> findById(String id) {
@@ -220,5 +225,36 @@ public class ArticuloNodeService {
 
         return parent;
     }
+
+
+
+
+
+
+    public List<ArticuloNode> findByStatesRecursively(List<String> states) {
+        List<ArticuloNode> rootNodes = repository.findByStateIn(states);
+        List<ArticuloNode> result = new ArrayList<>();
+
+        for (ArticuloNode rootNode : rootNodes) {
+            result.add(copyWithChildrenByStates(rootNode, states));
+        }
+
+        return result;
+    }
+
+    private ArticuloNode copyWithChildrenByStates(ArticuloNode node, List<String> states) {
+        List<ArticuloNode> children = node.getChildren().stream()
+                .filter(child -> states.contains(child.getState()))
+                .map(child -> copyWithChildrenByStates(child, states))
+                .collect(Collectors.toList());
+
+        return new ArticuloNode(
+                node.getId(), node.getName(), node.getContent(), node.getState(),
+                node.getReferencia(), children, node.getIsVisible(), node.getIsExpanded(),
+                node.getId_padre(), node.getContent_transform(), node.getUsuario_creacion(),
+                node.getUsuario_modificacion(), node.getFecha_creacion(), node.getFecha_modificacion()
+        );
+    }
+    
 
 }

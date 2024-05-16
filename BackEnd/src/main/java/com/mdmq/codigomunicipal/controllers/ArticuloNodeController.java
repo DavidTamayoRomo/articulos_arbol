@@ -35,6 +35,11 @@ public class ArticuloNodeController {
     public List<ArticuloNode> getAllArticulos() {
         return service.findAll();
     }
+  
+    @GetMapping("/states")
+    public List<ArticuloNode> findByState(@RequestParam(required = false) List<String> states) {
+        return service.findByStatesRecursively(states);
+    }
 
     @GetMapping("/{id}")
     public ArticuloNode getArticuloById(@PathVariable String id) {
