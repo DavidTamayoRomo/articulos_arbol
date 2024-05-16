@@ -72,6 +72,7 @@ interface Node {
 })
 export class ListaArticulosComponent {
 
+  chipsControl = new FormControl(['Activas']);
   states:string[]= ['activo'];
 
   private fb = inject(FormBuilder);
@@ -179,9 +180,9 @@ export class ListaArticulosComponent {
       console.log('Chips have changed:', value);
       //Realizar el filtro segun valor del CHIP
       if(value == 'Todas'){
-        this.states=['activo', 'Derogado'];
-        this.sendEstados(['activo', 'Derogado']);
-        this.articuloService.getArticulosByState(['activo', 'Derogado']).subscribe({
+        this.states=['activo', 'derogado'];
+        this.sendEstados(['activo', 'derogado']);
+        this.articuloService.getArticulosByState(['activo', 'derogado']).subscribe({
           next: (data: any) => {
             console.log(data);
             this.dataSource.data = this.buildCompleteList(data);
@@ -679,7 +680,7 @@ export class ListaArticulosComponent {
               verticalPosition: 'top',
             });
             this.toggleClass1();
-            this.articuloService.getArticulos().subscribe({
+            this.articuloService.getArticulosByState(this.states).subscribe({
               next: (data: any) => {
                 this.dataSource.data = this.buildCompleteList(data);
                 this.sendMessage();
@@ -702,7 +703,7 @@ export class ListaArticulosComponent {
               verticalPosition: 'top',
             });
             this.toggleClass1();
-            this.articuloService.getArticulos().subscribe({
+            this.articuloService.getArticulosByState(this.states).subscribe({
               next: (data: any) => {
                 this.dataSource.data = this.buildCompleteList(data);
                 this.sendMessage();
@@ -733,7 +734,7 @@ export class ListaArticulosComponent {
       name: element.name,
       content: element.content,
       content_transform: pipeTextFromObject.transform(element.content),
-      state: "Derogado",
+      state: "derogado",
       referencia: element.referencia,
       children: element.children,
       id: element.id,
@@ -754,12 +755,13 @@ export class ListaArticulosComponent {
             horizontalPosition: 'right',
             verticalPosition: 'top',
           });
-          this.articuloService.getArticulos().subscribe({
+          this.articuloService.getArticulosByState(this.states).subscribe({
             next: (data: any) => {
               console.log(data);
               console.log(this.buildCompleteList(data));//TODO: Verificar xq no se actualiza
               this.dataSource.data = this.buildCompleteList(data);
               this.dataSource.paginator = this.paginator;
+              this.sendMessage();
             },
             error: (err) => { console.log("Error al cargar los Artículos") }
           });
@@ -773,7 +775,7 @@ export class ListaArticulosComponent {
     } else {
       this.articuloService.update(objeto, element.id, element.id).subscribe({
         next: ((resp: any) => {
-          this.articuloService.getArticulos().subscribe({
+          this.articuloService.getArticulosByState(this.states).subscribe({
             next: (data: any) => {
               this._snackBar.open('El registro seleccionado se actualizó con éxito', 'Cerrar', {
                 horizontalPosition: 'right',
@@ -783,6 +785,7 @@ export class ListaArticulosComponent {
               console.log(this.buildCompleteList(data));//TODO: Verificar xq no se actualiza
               this.dataSource.data = this.buildCompleteList(data);
               this.dataSource.paginator = this.paginator;
+              this.sendMessage();
             },
             error: (err) => { console.log("Error al cargar los Artículos") }
           });
@@ -796,6 +799,6 @@ export class ListaArticulosComponent {
 
 
 
-  chipsControl = new FormControl(['Chip1', 'Chip2', 'Chip3']);
+  
 
 }

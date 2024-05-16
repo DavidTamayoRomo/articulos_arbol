@@ -65,6 +65,8 @@ export class TwNestedNodesComponent {
     banderaPadre = false;
 
     form!: FormGroup;
+    states:string[]= ['activo'];
+
     private fb = inject(FormBuilder);
     constructor(
         public themeService: CustomizerSettingsService,
@@ -89,16 +91,17 @@ export class TwNestedNodesComponent {
         this.dataService.currentMessage.subscribe(message => {
             this.message = message;
             console.log(this.message);
-            this.obtenerTodos();
+            this.obtenerTodosEstados(this.states);
         });
 
         this.estadosService.currentMessage.subscribe((message:string[])=>{
             this.obtenerTodosEstados(message);
+            this.states = message;
         })
 
     }
 
-    obtenerTodos() {
+    /* obtenerTodos() {
         this.articuloService.getArticulos().subscribe({
             next: (data: any) => {
                 console.log(data);
@@ -109,7 +112,7 @@ export class TwNestedNodesComponent {
             },
             error: (err) => { console.log("Error al cargar los Artículos") }
         })
-    }
+    } */
     obtenerTodosEstados(lista:string[]) {
         this.articuloService.getArticulosByState(lista).subscribe({
             next: (data: any) => {
@@ -145,7 +148,7 @@ export class TwNestedNodesComponent {
             //Enviar al componente los visibles
             this.NodoSeleccionado.emit(visibleNodes);
         } else {
-            this.articuloService.getArticulos().subscribe({
+            this.articuloService.getArticulosByState(this.states).subscribe({
                 next: (data: any) => {
                     this.dataSource.data = data;
                     this.dataChange.next(data); // Inicializa el BehaviorSubject con los datos del árbol
@@ -246,7 +249,7 @@ export class TwNestedNodesComponent {
                     this.classApplied = !this.classApplied;
                     console.log(resp);
                     this.banderaPadre = false;
-                    this.obtenerTodos();
+                    this.obtenerTodosEstados(this.states);
                 },
                 error: err => {
                     console.log('Error al guardar');
@@ -302,7 +305,7 @@ export class TwNestedNodesComponent {
                             verticalPosition: 'top',
                         });
                         console.log(resp);
-                        this.obtenerTodos();
+                        this.obtenerTodosEstados(this.states);
                     },
                     error: err => {
                         console.log('Error al guardar');
@@ -312,7 +315,7 @@ export class TwNestedNodesComponent {
                 this.articuloService.createHijos(nuevoHijo, this.datoSeleccionadoGuardar?.id_padre, this.datoSeleccionadoGuardar?.id).subscribe({
                     next: (resp: any) => {
                         console.log(resp);
-                        this.obtenerTodos();
+                        this.obtenerTodosEstados(this.states);
                     },
                     error: err => {
                         console.log('Error al guardar');
