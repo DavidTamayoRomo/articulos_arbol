@@ -21,12 +21,7 @@
                         Contenido:
                     </span>
                     <span [innerHTML]="articulo.content_transform"></span><br><br>
-                    Nota: <a [href]="articulo?.referencia" >{{articulo?.referencia}}</a>
-                    
-                    
-                    
-                        
-                    
+                    Nota: <a [href]="articulo?.referencia" >{{articulo?.referencia}}</a>  
                 </div>
                 <div class="date bg-gray">
                     {{articulo?.fecha_creacion | date:'dd/MM/yyyy HH:mm'}}
