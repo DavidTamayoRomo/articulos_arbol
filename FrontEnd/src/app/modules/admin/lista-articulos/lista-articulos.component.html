@@ -21,8 +21,12 @@
                     </mat-chip-listbox>
                 </mat-card-subtitle>
                 <mat-card-subtitle>
-                    
-                    <button type="button" mat-button class="card-header-menu-btn"
+                    <button type="button" mat-button  matTooltip="Limpiar todos los campos" (click)="limpiar()">
+                        <span class="material-symbols-outlined">
+                            clear_all
+                        </span>
+                    </button>
+                    <button type="button" mat-button class="card-header-menu-btn" matTooltip="Descargar"
                         [matMenuTriggerFor]="cardHeaderMenu">
                         <span class="material-symbols-outlined">
                             download

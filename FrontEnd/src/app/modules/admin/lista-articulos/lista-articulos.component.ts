@@ -1,5 +1,5 @@
 import { NgIf } from '@angular/common';
-import { Component, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
@@ -90,6 +90,7 @@ export class ListaArticulosComponent {
   treeControl = new NestedTreeControl<Node>((node) => node.children);
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild('input') myInputRef!: ElementRef;
   // isToggled
   isToggled = false;
 
@@ -121,7 +122,7 @@ export class ListaArticulosComponent {
     this.parentMessage = element.content;
   }
 
-
+  
 
   // Search Filter
   applyFilter(event: Event) {
@@ -812,7 +813,17 @@ export class ListaArticulosComponent {
   }
 
 
-
+  limpiar(){
+    this.articuloService.getArticulosByState(this.states).subscribe({
+      next: (data: any) => {
+        this.dataSource.data = this.buildCompleteList(data);
+        this.dataSource.paginator = this.paginator;
+        this.sendMessage();
+        this.myInputRef.nativeElement.value ='';
+      },
+      error: (err) => { console.log("Error al cargar los Artículos") }
+    });
+  }
 
 
 }
