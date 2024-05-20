@@ -951,7 +951,7 @@
 
 
 
-.mat-column-contenido{
+.mat-column-contenido {
     width: 100% !important; // Ancho específico
     max-width: 60px !important; // Limita el ancho
     white-space: normal !important; // Permite que el texto salte a nuevas líneas
@@ -960,8 +960,33 @@
     word-break: break-word !important; // Divide el texto para evitar desbordamientos
 }
 
-.table-responsive{
-    max-height: 600px;  /* Ajusta esta altura según las necesidades de tu interfaz */
-    overflow-y: auto;   /* Habilita el desplazamiento vertical */
-    overflow-x: hidden; /* Opcional: Oculta el desplazamiento horizontal */
+.table-responsive {
+    max-height: 600px;
+    /* Ajusta esta altura según las necesidades de tu interfaz */
+    overflow-y: auto;
+    /* Habilita el desplazamiento vertical */
+    overflow-x: hidden;
+    /* Opcional: Oculta el desplazamiento horizontal */
+}
+
+.small-checkbox .mat-checkbox-inner-container,
+.small-checkbox .mat-checkbox-frame,
+.small-checkbox .mat-checkbox-background,
+.small-checkbox .mat-checkbox-checkmark {
+    width: 16px;
+    height: 16px;
+}
+
+.small-checkbox .mat-checkbox-label {
+    font-size: 12px;
+    margin-left: 4px;
+}
+
+.mr-2 {
+    margin-left: 300px;
+    /* Espaciado entre el checkbox y el input */
+}
+.search-box {
+    display: flex;
+    align-items: center;
 }

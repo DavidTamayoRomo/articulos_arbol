@@ -5,7 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Router, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCheckbox, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -91,6 +91,7 @@ export class ListaArticulosComponent {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild('input') myInputRef!: ElementRef;
+  @ViewChild('checkArticulo') checkArticulo!: MatCheckbox;
   // isToggled
   isToggled = false;
 
@@ -126,8 +127,16 @@ export class ListaArticulosComponent {
 
   // Search Filter
   applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    const isChecked = this.checkArticulo.checked;
+    let filterValue;
+    if (isChecked) {
+      filterValue =`Artículo ${(event.target as HTMLInputElement).value}`;
+      console.log('valor filter check', filterValue);
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+    }else{
+      filterValue = (event.target as HTMLInputElement).value;
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+    }
   }
 
   parentMessage: any;
