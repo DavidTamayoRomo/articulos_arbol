@@ -823,6 +823,7 @@ export class ListaArticulosComponent {
 
 
   limpiar(){
+    this.checkArticulo.checked = false;
     this.articuloService.getArticulosByState(this.states).subscribe({
       next: (data: any) => {
         this.dataSource.data = this.buildCompleteList(data);

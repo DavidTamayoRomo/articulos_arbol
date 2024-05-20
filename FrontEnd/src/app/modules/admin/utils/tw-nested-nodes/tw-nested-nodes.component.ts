@@ -91,6 +91,7 @@ export class TwNestedNodesComponent {
         this.dataService.currentMessage.subscribe(message => {
             this.message = message;
             console.log(this.message);
+            this.searchText ='';
             this.obtenerTodosEstados(this.states);
         });
 
