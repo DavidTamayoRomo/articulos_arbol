@@ -242,7 +242,7 @@ export class ListaArticulosComponent {
   }
   exportToCSV() {
     console.log(this.dataSource.data);
-    const fieldsToExport = ['name', 'content_transform', 'state'];
+    const fieldsToExport = ['name', 'content', 'state'];
     const filteredData = this.filterFields(this.dataSource.data, fieldsToExport);
     this.exportToExcel(filteredData, 'Codigo_Municipal');
   }
