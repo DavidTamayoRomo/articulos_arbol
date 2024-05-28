@@ -49,7 +49,6 @@ export class EditorsComponent {
 
     // make sure to destory the editor
     ngOnDestroy(): void {
-        console.log("Destruyendo el componente");
         this.editor.destroy();
     }
 

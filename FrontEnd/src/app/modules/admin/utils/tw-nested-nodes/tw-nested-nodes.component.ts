@@ -20,6 +20,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { KeycloakAuthService } from '../../../../auth/services/keycloak-auth.service';
 import { DataService } from '../../services/data.service';
 import { EstadosService } from '../../services/estados.service';
+import { EditorQuillComponent } from '../editor-quill/editor-quill.component';
 
 interface Node {
     id?: string;
@@ -43,7 +44,7 @@ interface Node {
 @Component({
     selector: 'app-tw-nested-nodes',
     standalone: true,
-    imports: [MatTreeModule, MatButtonModule, MatIconModule, FormsModule, MatCardModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, EditorsComponent, HasRoleDirective],
+    imports: [MatTreeModule, MatButtonModule, MatIconModule, FormsModule, MatCardModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, EditorsComponent, HasRoleDirective, EditorQuillComponent],
     templateUrl: './tw-nested-nodes.component.html',
     styleUrl: './tw-nested-nodes.component.scss'
 })
@@ -91,7 +92,7 @@ export class TwNestedNodesComponent {
         this.dataService.currentMessage.subscribe(message => {
             this.message = message;
             console.log(this.message);
-            this.searchText ='';
+            this.searchText = '';
             this.obtenerTodosEstados(this.states);
         });
 
@@ -102,18 +103,6 @@ export class TwNestedNodesComponent {
 
     }
 
-    /* obtenerTodos() {
-        this.articuloService.getArticulos().subscribe({
-            next: (data: any) => {
-                console.log(data);
-                this.dataSource.data = data;
-                this.dataChange.next(data); // Inicializa el BehaviorSubject con los datos del árbol
-                this.dataChange.subscribe(data => this.dataSource.data = data); // Suscríbete a los cambios y actualiza la fuente de datos
-                this.resetTree();
-            },
-            error: (err) => { console.log("Error al cargar los Artículos") }
-        })
-    } */
     obtenerTodosEstados(lista:string[]) {
         this.articuloService.getArticulosByState(lista).subscribe({
             next: (data: any) => {
@@ -151,6 +140,7 @@ export class TwNestedNodesComponent {
         } else {
             this.articuloService.getArticulosByState(this.states).subscribe({
                 next: (data: any) => {
+                    console.log(data);
                     this.dataSource.data = data;
                     this.dataChange.next(data); // Inicializa el BehaviorSubject con los datos del árbol
                     this.dataChange.subscribe(data => this.dataSource.data = data); // Suscríbete a los cambios y actualiza la fuente de datos
