@@ -30,8 +30,7 @@ import { HasRoleDirective } from '../../../directives/has-role.directive';
 import { KeycloakAuthService } from '../../../auth/services/keycloak-auth.service';
 import { TextFromObjectPipe } from "../../../text-from-object.pipe";
 import { Validators } from 'ngx-editor';
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
+
 import { HighlightPipe } from '../../../highlight.pipe';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DataService } from '../services/data.service';
@@ -41,8 +40,10 @@ import * as XLSX from 'xlsx';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { EditorQuillComponent } from '../utils/editor-quill/editor-quill.component';
-import htmlToPdfmake from 'html-to-pdfmake';
 
+import htmlToPdfmake from 'html-to-pdfmake';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -246,7 +247,7 @@ export class ListaArticulosComponent {
     const filteredData = this.filterFields(this.dataSource.data, fieldsToExport);
     this.exportToExcel(filteredData, 'Codigo_Municipal');
   }
-
+  
   exportToExcel(data: any[], fileName: string): void {
     // Create a new worksheet
     const worksheet: XLSX.WorkSheet = {};
@@ -308,15 +309,17 @@ export class ListaArticulosComponent {
 
 
   private buildDocument(htmlContents: any): any {
-    console.log(htmlContents);
-    const pdfContent = htmlContents.map((html:any) => htmlToPdfmake(html.content));
+    const pdfContent = htmlContents.map((html: any) => htmlToPdfmake(html.content));
     const header = this.buildHeader();
     return {
       header: header,
       content: pdfContent.flat(),
       styles: {
         header: { fontSize: 18, bold: true },
-        body: { fontSize: 12 }
+        body: { fontSize: 12 },
+        'ql-align-right': { alignment: 'right' },
+        'ql-align-center': { alignment: 'center' },
+        'ql-align-justify': { alignment: 'justify' }
       },
       pageMargins: [40, 150, 40, 40]
     };
@@ -569,42 +572,49 @@ export class ListaArticulosComponent {
     });
   }
 
-  getAlignment(alignment: string) {
-    switch (alignment) {
-      case 'center':
-        return AlignmentType.CENTER;
-      case 'justify':
-        return AlignmentType.JUSTIFIED;
-      case 'right':
+  getAlignment(styles: string[]) {
+    console.log('ALINEAR: ', styles);
+    if (styles) {
+      if (styles.includes('ql-align-right')) {
         return AlignmentType.RIGHT;
-      default:
+      } else if (styles.includes('ql-align-center')) {
+        return AlignmentType.CENTER;
+      } else if (styles.includes('ql-align-justify')) {
+        return AlignmentType.JUSTIFIED;
+      } else {
         return AlignmentType.LEFT;
+      }
     }
+    return AlignmentType.LEFT;
   }
 
   createParagraphsFromData(data: any[]): Paragraph[] {
+    console.log(data);
     return data.map(item => {
       const marginAfter = item.margin && item.margin.length > 3 ? item.margin[3] * 20 : 0;
       const paragraph: any = new Paragraph({
-        alignment: this.getAlignment(item.alignment),
+        alignment: this.getAlignment(item.style),
         spacing: {
           after: marginAfter,  // Convierte el margen de píxeles a puntos
         }
       });
-      item?.text?.forEach((part: any) => {
-        const textRun = new TextRun({
-          text: part.text,
-          bold: part.bold || false,
-          italics: part.italics || false,
-          color: part.color || undefined,
-          highlight: part.backgroundColor || undefined,
-          underline: this.getUnderlineStyle(part.decoration),
-          strike: part.decoration === "lineThrough",
-          font: part.font || 'Arial',
-          size: part.size || 24, // Tamaño predeterminado de 12pt
+      if(item?.text?.length>0){
+        item?.text?.forEach((part: any) => {
+          const textRun = new TextRun({
+            text: part.text,
+            bold: part.bold || false,
+            italics: part.italics || false,
+            color: part.color || undefined,
+            highlight: part.backgroundColor || undefined,
+            underline: this.getUnderlineStyle(part.decoration),
+            strike: part.decoration === "lineThrough",
+            font: part.font || 'Arial',
+            size: part.size || 24, // Tamaño predeterminado de 12pt
+          });
+          paragraph.addChildElement(textRun);
         });
-        paragraph.addChildElement(textRun);
-      });
+      }
+      
 
       return paragraph;
     });
