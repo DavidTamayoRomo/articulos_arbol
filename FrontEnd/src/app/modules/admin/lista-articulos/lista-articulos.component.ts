@@ -25,7 +25,7 @@ import { MatTreeModule, MatTreeNestedDataSource } from '@angular/material/tree';
 import { ArbolService } from '../services/arbol.service';
 import { ArticuloService } from '../services/articulo.service';
 import { saveAs } from 'file-saver';
-import { Document, Paragraph, TextRun, Packer, AlignmentType, UnderlineType, Header, ImageRun } from "docx";
+import { Document, Paragraph, TextRun, Packer, AlignmentType, UnderlineType, Header, ImageRun, Table, TableRow, TableCell, WidthType } from "docx";
 import { HasRoleDirective } from '../../../directives/has-role.directive';
 import { KeycloakAuthService } from '../../../auth/services/keycloak-auth.service';
 import { TextFromObjectPipe } from "../../../text-from-object.pipe";
@@ -247,7 +247,7 @@ export class ListaArticulosComponent {
     const filteredData = this.filterFields(this.dataSource.data, fieldsToExport);
     this.exportToExcel(filteredData, 'Codigo_Municipal');
   }
-  
+
   exportToExcel(data: any[], fileName: string): void {
     // Create a new worksheet
     const worksheet: XLSX.WorkSheet = {};
@@ -349,10 +349,10 @@ export class ListaArticulosComponent {
 
   exportToPDF() {
     let jsonData = this.dataSource.data;
-    
+
     const docDefinition = this.buildDocument(jsonData);
     pdfMake.createPdf(docDefinition).open();
-    
+
     //this.exportToPDFImport(jsonData);
   }
 
@@ -547,7 +547,7 @@ export class ListaArticulosComponent {
             ]
           })
         },
-        children: this.createParagraphsFromData(docDefinition.content)
+        children: this.createParagraphsAndTablesFromData(docDefinition.content)
       }],
     });
 
@@ -588,35 +588,65 @@ export class ListaArticulosComponent {
     return AlignmentType.LEFT;
   }
 
-  createParagraphsFromData(data: any[]): Paragraph[] {
+  createParagraphsAndTablesFromData(data: any[]): (Paragraph | Table)[] {
     console.log(data);
     return data.map(item => {
-      const marginAfter = item.margin && item.margin.length > 3 ? item.margin[3] * 20 : 0;
-      const paragraph: any = new Paragraph({
-        alignment: this.getAlignment(item.style),
-        spacing: {
-          after: marginAfter,  // Convierte el margen de píxeles a puntos
-        }
-      });
-      if(item?.text?.length>0){
-        item?.text?.forEach((part: any) => {
-          const textRun = new TextRun({
-            text: part.text,
-            bold: part.bold || false,
-            italics: part.italics || false,
-            color: part.color || undefined,
-            highlight: part.backgroundColor || undefined,
-            underline: this.getUnderlineStyle(part.decoration),
-            strike: part.decoration === "lineThrough",
-            font: part.font || 'Arial',
-            size: part.size || 24, // Tamaño predeterminado de 12pt
-          });
-          paragraph.addChildElement(textRun);
-        });
+      console.log(item);
+      if (item?.table) {
+        return this.createTable(item.table);
+      } else {
+        return this.createParagraph(item);
       }
-      
+    });
+  }
 
-      return paragraph;
+  createParagraph(item: any): Paragraph {
+    const marginAfter = item.margin && item.margin.length > 3 ? item.margin[3] * 20 : 0;
+    const paragraph: any = new Paragraph({
+      alignment: this.getAlignment(item.style),
+      spacing: {
+        after: marginAfter,
+      }
+    });
+    if (item?.text?.length > 0) {
+      item?.text?.forEach((part: any) => {
+        const textRun = new TextRun({
+          text: part.text,
+          bold: part.bold || false,
+          italics: part.italics || false,
+          color: part.color || undefined,
+          highlight: part.backgroundColor || undefined,
+          underline: this.getUnderlineStyle(part.decoration),
+          strike: part.decoration === "lineThrough",
+          font: part.font || 'Arial',
+          size: part.size || 24,
+        });
+        paragraph.addChildElement(textRun);
+      });
+    }
+    return paragraph;
+  }
+
+  createTable(tableData: any): Table {
+    console.log(tableData);
+    const rows = tableData.body.map((row: any) => {
+      console.log(row);
+      const cells = row.map((cell: any) => new TableCell({
+        children: [new Paragraph({
+          children: [new TextRun(cell.text)]
+        })]
+      }));
+      return new TableRow({
+        children: cells
+      });
+    });
+
+    return new Table({
+      rows: rows,
+      width: {
+        size: 100,
+        type: WidthType.PERCENTAGE,
+      },
     });
   }
 
