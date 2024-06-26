@@ -613,7 +613,7 @@ export class ListaArticulosComponent {
         after: marginAfter,
       }
     });
-    if (item?.text?.length > 0) {
+    if (Array.isArray(item?.text)) {
       item?.text?.forEach((part: any) => {
         const textRun = new TextRun({
           text: part.text,
@@ -628,6 +628,19 @@ export class ListaArticulosComponent {
         });
         paragraph.addChildElement(textRun);
       });
+    }else{
+      const textRun = new TextRun({
+        text: item?.text,
+        bold: item.bold || false,
+        italics: item.italics || false,
+        color: item.color || undefined,
+        highlight: item.backgroundColor || undefined,
+        underline: this.getUnderlineStyle(item.decoration),
+        strike: item.decoration === "lineThrough",
+        font: item.font || 'Arial',
+        size: item.size || 24,
+      });
+      paragraph.addChildElement(textRun);
     }
     return paragraph;
   }
