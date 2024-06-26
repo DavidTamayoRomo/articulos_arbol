@@ -44,7 +44,7 @@
                         </mat-icon>
                     </button>
                     <span (click)="logNodeData(node)" class="node-name"
-                        [class.highlighted]="node.isVisible">{{node.name}}</span>
+                        [class.highlighted]="node.isVisible"  [innerHTML]="sanitizeContent(node.name)"></span>
                     <!-- Botón para agregar un nuevo hijo al nodo actual -->
                     <span class="material-symbols-outlined" (click)="abrirModalNuevo(node)" *hasRole="['Administrador']">add</span>
                 </div>

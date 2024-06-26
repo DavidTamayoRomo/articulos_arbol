@@ -25,7 +25,7 @@ import { MatTreeModule, MatTreeNestedDataSource } from '@angular/material/tree';
 import { ArbolService } from '../services/arbol.service';
 import { ArticuloService } from '../services/articulo.service';
 import { saveAs } from 'file-saver';
-import { Document, Paragraph, TextRun, Packer, AlignmentType, UnderlineType, Header, ImageRun, Table, TableRow, TableCell, WidthType } from "docx";
+import { Document, Paragraph, TextRun, Packer, AlignmentType, UnderlineType, Header, ImageRun, Table, TableRow, TableCell, WidthType, Numbering, convertInchesToTwip, LevelFormat } from "docx";
 import { HasRoleDirective } from '../../../directives/has-role.directive';
 import { KeycloakAuthService } from '../../../auth/services/keycloak-auth.service';
 import { TextFromObjectPipe } from "../../../text-from-object.pipe";
@@ -543,7 +543,7 @@ export class ListaArticulosComponent {
                   })
                 ],
                 alignment: AlignmentType.CENTER
-              })
+              }),
             ]
           })
         },
@@ -556,6 +556,8 @@ export class ListaArticulosComponent {
     });
 
   }
+
+
 
   async getImageData() {
     const imgUrl = 'assets/codigo_municipal.png';
@@ -594,6 +596,9 @@ export class ListaArticulosComponent {
       console.log(item);
       if (item?.table) {
         return this.createTable(item.table);
+      } else if (item?.ol) {
+        console.log(this.createList(item?.ol));
+        return this.createList(item?.ol);
       } else {
         return this.createParagraph(item);
       }
@@ -649,6 +654,33 @@ export class ListaArticulosComponent {
       },
     });
   }
+
+
+  createList(listData: any[]): any {
+    const paragraph: any = new Paragraph({
+      alignment: AlignmentType.LEFT,
+      spacing: {
+        after: 200,
+      }
+    });
+    listData.forEach((part: any) => {
+      const textRun = new TextRun({
+        text: part.text,
+        bold: part.bold || false,
+        italics: part.italics || false,
+        color: part.color || undefined,
+        highlight: part.backgroundColor || undefined,
+        underline: this.getUnderlineStyle(part.decoration),
+        strike: part.decoration === "lineThrough",
+        font: part.font || 'Arial',
+        size: part.size || 24,
+      });
+      paragraph.addChildElement(textRun);
+    });
+    return paragraph;
+  }
+
+
 
   getUnderlineStyle(decoration: string | undefined): { type: any, color?: string } | undefined {
     if (decoration === "underline") {

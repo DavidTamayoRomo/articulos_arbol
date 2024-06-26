@@ -21,6 +21,7 @@ import { KeycloakAuthService } from '../../../../auth/services/keycloak-auth.ser
 import { DataService } from '../../services/data.service';
 import { EstadosService } from '../../services/estados.service';
 import { EditorQuillComponent } from '../editor-quill/editor-quill.component';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 interface Node {
     id?: string;
@@ -75,7 +76,8 @@ export class TwNestedNodesComponent {
         private _snackBar: MatSnackBar,
         private keycloakauthService: KeycloakAuthService,
         private dataService: DataService,
-        private estadosService: EstadosService
+        private estadosService: EstadosService,
+        private sanitizer: DomSanitizer
     ) {
 
     }
@@ -394,6 +396,10 @@ export class TwNestedNodesComponent {
 
     borrarForm() {
         this.form.reset();
+    }
+
+    sanitizeContent(content: string): SafeHtml {
+        return this.sanitizer.bypassSecurityTrustHtml(content);
     }
 
 
