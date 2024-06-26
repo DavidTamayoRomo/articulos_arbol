@@ -14,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.mdmq.codigomunicipal.models.ArticuloNode;
-import com.mdmq.codigomunicipal.service.ArticuloNodeImportService;
 import com.mdmq.codigomunicipal.service.ArticuloNodeService;
 
 @RestController
@@ -35,7 +33,7 @@ public class ArticuloNodeController {
     public List<ArticuloNode> getAllArticulos() {
         return service.findAll();
     }
-  
+
     @GetMapping("/states")
     public List<ArticuloNode> findByState(@RequestParam(required = false) List<String> states) {
         return service.findByStatesRecursively(states);
@@ -79,6 +77,10 @@ public class ArticuloNodeController {
         return service.updateChildNodeById(id_padre, id_hijo, articuloNode);
     }
 
-    
+    @PutMapping("/updateParentId/{id}/{newParentId}")
+    public ResponseEntity<ArticuloNode> updateParentId(@PathVariable String id, @PathVariable String newParentId) {
+        ArticuloNode updatedNode = service.updateParentIdRecursively(id, newParentId);
+        return ResponseEntity.ok(updatedNode);
+    }
 
 }

@@ -28,7 +28,7 @@ public class ArticuloNodeService {
     public List<ArticuloNode> findAll() {
         return repository.findAll();
     }
-    
+
     public List<ArticuloNode> findByStateIn(List<String> states) {
         return repository.findByStateIn(states);
     }
@@ -226,11 +226,6 @@ public class ArticuloNodeService {
         return parent;
     }
 
-
-
-
-
-
     public List<ArticuloNode> findByStatesRecursively(List<String> states) {
         List<ArticuloNode> rootNodes = repository.findByStateIn(states);
         List<ArticuloNode> result = new ArrayList<>();
@@ -252,9 +247,45 @@ public class ArticuloNodeService {
                 node.getId(), node.getName(), node.getContent(), node.getState(),
                 node.getReferencia(), children, node.getIsVisible(), node.getIsExpanded(),
                 node.getId_padre(), node.getContent_transform(), node.getUsuario_creacion(),
-                node.getUsuario_modificacion(), node.getFecha_creacion(), node.getFecha_modificacion()
-        );
+                node.getUsuario_modificacion(), node.getFecha_creacion(), node.getFecha_modificacion());
+    }
+
+
+
+    public ArticuloNode updateParentIdRecursively(String id, String newParentId) {
+        // Encuentra el nodo que se va a actualizar
+        ArticuloNode node = findByIdNode(id);
+        if (node == null) {
+            throw new IllegalArgumentException("Nodo no encontrado con ID: " + id);
+        }
+    
+        // Actualiza el id_padre del nodo
+        //node.setId_padre(newParentId);
+    
+        // Recursivamente actualiza todos los hijos
+        updateChildrenParentIdRecursively(node, newParentId);
+    
+        // Guarda el nodo actualizado
+        ArticuloNode savedNode = save(node);
+    
+        return savedNode;
     }
     
+    private void updateChildrenParentIdRecursively(ArticuloNode node, String newParentId) {
+        if (node.getChildren() != null) {
+            for (ArticuloNode child : node.getChildren()) {
+                // Actualiza el id_padre de cada hijo
+                child.setId_padre(newParentId);
+    
+                // Guarda el nodo hijo actualizado
+                save(child);
+    
+                // Recursivamente actualiza los hijos del hijo
+                updateChildrenParentIdRecursively(child, newParentId);
+            }
+        }
+    }
 
+
+   
 }
