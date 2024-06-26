@@ -20,15 +20,16 @@ public class ArticuloNodeImportService {
         Map<String, ArticuloNode> levelToNodeMap = new HashMap<>();
 
         for (Row row : sheet) {
-            if (row.getRowNum() == 0) continue; // Skip header row
+            if (row.getRowNum() == 0)
+                continue; // Skip header row
 
-            String level = getCellAsString(row.getCell(0));
-            String name = getCellAsString(row.getCell(1));
-            String content = getCellAsString(row.getCell(2));
-            String state = getCellAsString(row.getCell(3));
-            String referencia = getCellAsString(row.getCell(4));
-            String usuarioCreacion = getCellAsString(row.getCell(5));
-            String usuarioModificacion = getCellAsString(row.getCell(6));
+            String level = getCellAsFormattedString(row.getCell(0),workbook);
+            String name = getCellAsFormattedString(row.getCell(1),workbook);
+            String content = getCellAsFormattedString(row.getCell(2),workbook);
+            String state = getCellAsFormattedString(row.getCell(3),workbook);
+            String referencia = getCellAsFormattedString(row.getCell(4),workbook);
+            String usuarioCreacion = getCellAsFormattedString(row.getCell(5),workbook);
+            String usuarioModificacion = getCellAsFormattedString(row.getCell(6),workbook);
 
             ArticuloNode node = new ArticuloNode();
             node.setName(name);
@@ -60,49 +61,60 @@ public class ArticuloNodeImportService {
         inputStream.close();
     }
 
-
-
-    public String getCellAsString(Cell cell) {
+    public String getCellAsFormattedString(Cell cell, Workbook workbook) {
         if (cell == null) return ""; // Si la celda es null, regresa una cadena vacía.
-    
+
+        CellStyle style = cell.getCellStyle();
+        Font font = workbook.getFontAt(style.getFontIndex());
+
+        String cellValue = "";
         switch (cell.getCellType()) {
             case STRING:
-                return cell.getStringCellValue();
+                cellValue = cell.getStringCellValue();
+                break;
             case NUMERIC:
-                // Convertir el valor numérico a String sin perder información.
-                // Si el valor es exactamente igual a su parte entera, se convierte eliminando cualquier parte decimal
                 double numericValue = cell.getNumericCellValue();
-                if ((numericValue == Math.floor(numericValue)) && !Double.isInfinite(numericValue)) {
-                    // Es un número entero, convertir sin parte decimal
-                    return String.format("%.0f", numericValue);
-                } else {
-                    // Es un número con decimales, convertir manteniendo la precisión
-                    return String.valueOf(numericValue);
-                }
+                cellValue = (numericValue == Math.floor(numericValue)) && !Double.isInfinite(numericValue)
+                            ? String.format("%.0f", numericValue) 
+                            : String.valueOf(numericValue);
+                break;
             case BOOLEAN:
-                // Convertir booleano a String
-                return String.valueOf(cell.getBooleanCellValue());
+                cellValue = String.valueOf(cell.getBooleanCellValue());
+                break;
             case FORMULA:
-                // Evaluar la fórmula y tratar el resultado según su tipo
-                switch (cell.getCachedFormulaResultType()) {
-                    case STRING:
-                        return cell.getStringCellValue();
-                    case NUMERIC:
-                        double formulaValue = cell.getNumericCellValue();
-                        if ((formulaValue == Math.floor(formulaValue)) && !Double.isInfinite(formulaValue)) {
-                            return String.format("%.0f", formulaValue);
-                        } else {
-                            return String.valueOf(formulaValue);
-                        }
-                    case BOOLEAN:
-                        return String.valueOf(cell.getBooleanCellValue());
-                    default:
-                        return "";
-                }
+                cellValue = handleFormula(cell, workbook);
+                break;
             case BLANK:
                 return "";
             default:
                 return "";
         }
+
+        // Agregar etiquetas HTML para negritas y cursivas
+        if (font.getBold()) {
+            cellValue = "<b>" + cellValue + "</b>";
+        }
+        if (font.getItalic()) {
+            cellValue = "<i>" + cellValue + "</i>";
+        }
+
+        return cellValue;
     }
+
+    private String handleFormula(Cell cell, Workbook workbook) {
+        switch (cell.getCachedFormulaResultType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                double formulaValue = cell.getNumericCellValue();
+                return (formulaValue == Math.floor(formulaValue)) && !Double.isInfinite(formulaValue)
+                       ? String.format("%.0f", formulaValue) 
+                       : String.valueOf(formulaValue);
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            default:
+                return "";
+        }
+    }
+
 }
