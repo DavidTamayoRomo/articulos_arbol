@@ -1,5 +1,5 @@
 <header
-    class="header-area bg-white border-radius transition"
+    class="header-area border-radius transition"
     [ngClass]="{'active': isSidebarToggled, 'sticky': isSticky}"
     [class.component-dark-theme]="themeService.isDark()"
     [class.right-sidebar]="themeService.isRightSidebar()"
@@ -7,13 +7,12 @@
     [class.dark-header]="themeService.isHeaderDark()"
     [class.card-borderd-theme]="themeService.isCardBorder()"
     [class.rtl-enabled]="themeService.isRTLEnabled()"
->
+    >
 
-    <div class="d-md-flex align-items-center justify-content-between">
+    <div class="d-md-flex align-items-center justify-content-between" >
         <a class="d-flex align-items-center">
             <!-- <img src="assets/images/logo-icon.svg" alt="logo-icon"> -->
-            <img src="assets/images/icons/logo-icon.png" alt="logo-icon" width="50px"/>
-            <span class="fw-semibold">Codigo Municipal</span>
+            <img src="assets/images/HOME.png" alt="logo-icon" width="35px"/>
         </a>
 
         <div class="header-left-side d-flex align-items-center">
@@ -44,7 +43,7 @@
             
             <li>
                 <button mat-button [matMenuTriggerFor]="profileMenu" class="profile-menu-btn">
-                    <img src="assets/images/admin.png" alt="profile-image">
+                    <img src="assets/images/Usuario.png" alt="profile-image" width="35px">
                     <span class="status d-inline-block rounded-circle position-absolute"></span>
                 </button>
                 <mat-menu class="profile-menu-dropdown" #profileMenu="matMenu" xPosition="before">
