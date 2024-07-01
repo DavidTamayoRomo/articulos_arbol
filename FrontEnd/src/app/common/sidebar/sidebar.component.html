@@ -9,7 +9,7 @@
     [class.rtl-enabled]="themeService.isRTLEnabled()"
 >
     <div class="logo bg-white">
-        <a routerLink="/" class="d-flex align-items-center">
+        <a routerLink="/admin/lista-articulos" class="d-flex align-items-center">
             <!-- <img src="assets/images/logo-icon.svg" alt="logo-icon"> -->
             <img src="assets/images/icons/logo-icon.png" alt="logo-icon">
             <span class="fw-semibold">Codigo Municipal</span>
@@ -41,7 +41,7 @@
                   
                     <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = true">
                         <mat-expansion-panel-header>
-                            <mat-panel-title>
+                            <mat-panel-title style="color: black;">
                                 <i class="material-symbols-outlined">
                                     lock_open
                                 </i>

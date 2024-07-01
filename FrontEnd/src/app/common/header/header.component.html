@@ -10,11 +10,14 @@
     >
 
     <div class="d-md-flex align-items-center justify-content-between" >
-        <a class="d-flex align-items-center">
+        <a class="d-flex align-items-center"routerLink="/articulos" *ngIf="!mostrarLogout">
             <!-- <img src="assets/images/logo-icon.svg" alt="logo-icon"> -->
             <img src="assets/images/HOME.png" alt="logo-icon" width="35px"/>
         </a>
-
+        <a class="d-flex align-items-center"routerLink="/admin/lista-articulos" *ngIf="mostrarLogout">
+            <!-- <img src="assets/images/logo-icon.svg" alt="logo-icon"> -->
+            <img src="assets/images/HOME.png" alt="logo-icon" width="35px"/>
+        </a>
         <div class="header-left-side d-flex align-items-center">
             <div
                 class="burger-menu cursor-pointer transition d-xl-none"
