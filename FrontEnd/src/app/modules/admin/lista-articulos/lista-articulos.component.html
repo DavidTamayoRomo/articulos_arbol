@@ -4,9 +4,9 @@
 
     </div>
     <div class="col-lg-9 col-md-12">
-        <mat-card class="daxa-card to-do-list-card mb-25 border-radius bg-white border-none d-block"
+        <mat-card class="daxa-card to-do-list-card mb-25 border-radius border-none d-block" style="background-color: #1275bb;"
             [class.rtl-enabled]="themeService.isRTLEnabled()">
-            <mat-card-header>
+            <mat-card-header >
 
                 <mat-card-subtitle>
                     <div class="row">
@@ -30,13 +30,29 @@
                     </div>
                 </mat-card-subtitle>
 
-                <mat-card-subtitle>
+                <mat-card-subtitle  >
+                    
+
                     <button type="button" mat-button matTooltip="Limpiar todos los campos" (click)="limpiar()">
                         <span class="material-symbols-outlined">
                             clear_all
                         </span>
                     </button>
-                    <button type="button" mat-button class="card-header-menu-btn" matTooltip="Descargar"
+                    
+                    <div class="button-container">
+                        <button type="button" mat-button matTooltip="Descargar Excel" (click)="exportToCSV()">
+                            <img src="assets/images/EXCEL.png" width="40px">
+                        </button>
+                        <button type="button" mat-button matTooltip="Descargar PDF" (click)="exportToPDF()">
+                            <img src="assets/images/PDF-blanco.png" width="40px">
+                        </button>
+                        <button type="button" mat-button matTooltip="Descargar WORD" (click)="exportToDocx()">
+                            <img src="assets/images/Impresion.png" width="40px">
+                        </button>
+                    </div>
+                   
+
+                   <!--  <button type="button" mat-button class="card-header-menu-btn" matTooltip="Descargar"
                         [matMenuTriggerFor]="cardHeaderMenu">
                         <span class="material-symbols-outlined">
                             download
@@ -52,14 +68,14 @@
                         <button mat-menu-item (click)="exportToDocx()">
                             DOC
                         </button>
-                    </mat-menu>
+                    </mat-menu> -->
                 </mat-card-subtitle>
             </mat-card-header>
-            <mat-card-content>
-                <div>
+            <mat-card-content >
+                <div >
 
-                    <div class="table-responsive">
-                        <table mat-table [dataSource]="dataSource">
+                    <div class="table-responsive" >
+                        <table mat-table [dataSource]="dataSource" >
 
 
                             <ng-container matColumnDef="contenido">

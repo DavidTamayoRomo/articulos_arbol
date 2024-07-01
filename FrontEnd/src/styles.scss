@@ -35,15 +35,15 @@ $daxa-theme: mat.define-light-theme((
 /* You can add global styles to this file, and also import other style files */
 :root {
     --fontFamily: 'Outfit', sans-serif;
-    --daxaColor: #0f79f3;
+    --daxaColor: #ffffff;
     --primaryColor: #796df6;
     --dangerColor: #e74c3c;
     --infoColor: #00cae3;
     --warningColor: #ffb264;
     --successColor: #2ed47e;
-    --blackColor: #475569;
+    --blackColor: #000000;
     --whiteColor: #ffffff;
-    --bodyColor: #919aa3;
+    --bodyColor: #000000;
     --transition: .5s;
     --fontSize: 16px;
     --borderBoxShadow: rgba(0, 0, 0, .05) 0px 6px 24px 0px, rgba(0, 0, 0, .08) 0px 0px 0px 1px;
@@ -51,12 +51,15 @@ $daxa-theme: mat.define-light-theme((
 *, ::after, ::before {
     box-sizing: border-box;
 }
+
+
+
 body {
     margin: 0;
     padding: 0;
     color: var(--blackColor);
-    //Background general
-    background-color: #ffffff;
+    //Background
+    background-color: #eff3f9;
     font: {
         weight: 400;
         size: var(--fontSize);
