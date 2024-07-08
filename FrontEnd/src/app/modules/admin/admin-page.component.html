@@ -1,0 +1,26 @@
+<div [ngClass]="{'blank-page': router.url === '/authentication' 
+    || router.url === '/authentication/sign-up' 
+    || router.url === '/authentication/forgot-password' 
+    || router.url === '/authentication/reset-password' 
+    || router.url === '/authentication/lock-screen' 
+    || router.url === '/authentication/logout' 
+    || router.url === '/authentication/confirm-email' 
+    || router.url === '/coming-soon'}" [class.dark-theme]="themeService.isDark()"
+    [class.card-borderd-theme]="themeService.isCardBorder()"
+    [class.card-border-radius]="themeService.isCardBorderRadius()" [class.rtl-enabled]="themeService.isRTLEnabled()">
+
+
+
+    <div class="main-content transition d-flex flex-column" [ngClass]="{'active': isSidebarToggled}"
+        [class.right-sidebar]="themeService.isRightSidebar()" [class.dark-header]="themeService.isHeaderDark()"
+        [class.card-borderd-theme]="themeService.isCardBorder()" [class.rtl-enabled]="themeService.isRTLEnabled()">
+        <app-header></app-header>
+        <app-sidebar></app-sidebar>
+        <router-outlet></router-outlet>
+        <div class="flex-grow-1"></div>
+        <app-footer></app-footer>
+    </div>
+
+    <app-customizer-settings></app-customizer-settings>
+
+</div>

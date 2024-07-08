@@ -1,0 +1,39 @@
+<mat-card class="daxa-card advance-timeline-card mb-25 border-radius bg-white border-none d-block"
+    [class.component-dark-theme]="themeService.isDark()">
+    <mat-card-header>
+        <mat-card-title>
+            <h5 class="mt-0 mb-0">
+                Historial de cambios
+            </h5>
+        </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <ul class="timeline pl-0 mb-0 list-unstyled mt-0 position-relative">
+            <li class="timeline-item position-relative" *ngFor="let articulo of listaCambios"> 
+                <div class="inner bg-gray border-radius">
+                    <h5>
+                        {{articulo?.name}}
+                    </h5>
+                    <span class="assigned-to d-block text-body" *hasRole="['Administrador']">
+                        <span class="text-black fw-medium">Modificado por:</span> {{articulo?.usuario_modificacion==null?articulo?.usuario_creacion:articulo?.usuario_modificacion}}
+                    </span>
+                    <span class="description d-block">
+                        Contenido:
+                    </span>
+                    <span [innerHTML]="articulo.content_transform"></span><br><br>
+                    Nota: <a [href]="articulo?.referencia" >{{articulo?.referencia}}</a>  
+                </div>
+                <div class="date bg-gray">
+                    {{articulo?.fecha_modificacion | date:'dd/MM/yyyy HH:mm'}}
+                    <span class="arrow d-block"></span>
+                </div>
+            </li>
+            
+        </ul>
+    </mat-card-content>
+    <mat-card-footer>
+        <button mat-stroked-button (click)="regresar()">
+            Regresar
+        </button>
+    </mat-card-footer>
+</mat-card>
