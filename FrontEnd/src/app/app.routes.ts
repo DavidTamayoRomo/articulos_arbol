@@ -14,7 +14,7 @@ export const APP_ROUTES: Routes = [
     },
     {
         path: '',
-        component: PruebaPageComponent
+        component: ContenidoComponent
     },
     {path: 'articulos', component: ContenidoComponent},
     {path: 'historial/:id', component: ContenidoComponentPublico},
