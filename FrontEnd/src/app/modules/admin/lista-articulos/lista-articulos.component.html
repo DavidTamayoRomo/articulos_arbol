@@ -133,8 +133,7 @@
 
                             <!-- Row shown when there is no matching data. -->
                             <tr class="mat-row" *matNoDataRow>
-                                <td class="mat-cell" colspan="4">Información no existente: 
-                                    "{{input.value}}"</td>
+                                <td class="mat-cell" colspan="4">"Información no existente"</td>
                             </tr>
 
                         </table>
@@ -214,12 +213,12 @@
                                 <mat-label>
                                     Titulo
                                 </mat-label>
-                                <input formControlName="titulo" matInput placeholder="Ejm: Articulo 5..">
+                                <input formControlName="titulo" matInput >
                             </mat-form-field>
                         </div>
                         <div class="col-md-12">
                             <app-editor-quill (contentChanged)="handleEditorContentChanged($event)"
-                            [message]="parentMessage"></app-editor-quill>
+                            [message]="parentMessage" ></app-editor-quill>
                         </div>
                         <div class="col-md-12">
                             <label class="main-label d-block lh-1 text-black">

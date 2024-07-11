@@ -1,5 +1,5 @@
 import { NestedTreeControl } from '@angular/cdk/tree';
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Output,  inject } from '@angular/core';
 import { MatTreeNestedDataSource, MatTreeModule } from '@angular/material/tree';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,9 +7,8 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { CustomizerSettingsService } from '../../../../common/customizer-settings/customizer-settings.service';
 import { MatCardModule } from '@angular/material/card';
 import { BehaviorSubject } from 'rxjs';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Validators } from 'ngx-editor';
-import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
+import {  MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { EditorsComponent } from '../editors/editors.component';
@@ -349,6 +348,7 @@ export class TwNestedNodesComponent {
     }
 
     toggleClass() {
+        this.borrarForm();
         this.classApplied = !this.classApplied;
     }
 
@@ -393,9 +393,16 @@ export class TwNestedNodesComponent {
         this.borrarForm();
     }
 
-
+    
     borrarForm() {
+        this.form.patchValue({
+            titulo: null,
+            contenido: null,
+            estado: null,
+            referencia: null,
+        })
         this.form.reset();
+        
     }
 
     sanitizeContent(content: string): SafeHtml {

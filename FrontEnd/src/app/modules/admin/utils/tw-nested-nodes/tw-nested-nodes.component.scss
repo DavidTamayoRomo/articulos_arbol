@@ -1,3 +1,15 @@
+
+* {
+    cursor: default !important;
+}
+.node-name {
+    cursor: pointer;
+}
+/* Asegura que los inputs tengan un borde visible cuando están enfocados */
+input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, textarea:focus, .quill-editor:focus {
+    border: 2px solid #000000; /* Ajusta el color según sea necesario */
+    outline: none; /* Remueve el outline predeterminado del navegador */
+}
 .example-tree-invisible {
     display: none;
 }

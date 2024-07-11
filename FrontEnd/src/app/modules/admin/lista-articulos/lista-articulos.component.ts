@@ -120,7 +120,18 @@ export class ListaArticulosComponent {
     this.classApplied1 = !this.classApplied1;
   }
 
+  limpiarCampos(){
+    this.form.patchValue({
+      titulo: null,
+      contenido: null,
+      estado: null,
+      referencia: null,
+    })
+    this.parentMessage = '';
+  }
+
   abrirEditar(element: Node) {
+    this.limpiarCampos();
     this.contenidoSeleccionado = element;
     console.log(this.contenidoSeleccionado);
     this.toggleClass1();
@@ -249,10 +260,16 @@ export class ListaArticulosComponent {
     });
   }
   exportToCSV() {
-    console.log(this.dataSource.data);
+
     const fieldsToExport = ['name', 'content', 'state'];
-    const filteredData = this.filterFields(this.dataSource.data, fieldsToExport);
-    this.exportToExcel(filteredData, 'Codigo_Municipal');
+    this.articuloService.getArticulosByState(['activo']).subscribe({
+      next: (data: any) => {
+        const filteredData = this.filterFields(this.buildCompleteList(data), fieldsToExport);
+        this.exportToExcel(filteredData, 'Codigo_Municipal');
+      },
+      error: (err) => { console.log("Error al cargar los Artículos") }
+    });
+    
   }
 
   exportToExcel(data: any[], fileName: string): void {

@@ -1,3 +1,4 @@
+
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @use '@angular/material' as mat;
@@ -35,7 +36,7 @@ $daxa-theme: mat.define-light-theme((
 /* You can add global styles to this file, and also import other style files */
 :root {
     --fontFamily: 'Outfit', sans-serif;
-    --daxaColor: #ffffff;
+    --daxaColor: #1275bb;
     --primaryColor: #796df6;
     --dangerColor: #e74c3c;
     --infoColor: #00cae3;
@@ -52,7 +53,9 @@ $daxa-theme: mat.define-light-theme((
     box-sizing: border-box;
 }
 
-
+* {
+    cursor: default;
+}
 
 body {
     margin: 0;

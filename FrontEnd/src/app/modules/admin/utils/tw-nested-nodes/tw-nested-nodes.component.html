@@ -2,9 +2,7 @@
     [class.component-dark-theme]="themeService.isDark()" [class.rtl-enabled]="themeService.isRTLEnabled()">
     <mat-card-header>
         <mat-card-title>
-            <!-- <h5 class="mt-0 mb-0">
-                Contenido
-            </h5> -->
+            
             <button mat-button class=" p-0 h-auto" (click)="crearArticulo(true)" *hasRole="['Administrador']" style="color: #1275bb;">
                 + Agregar Contenido
             </button>
@@ -12,7 +10,7 @@
         </mat-card-title>
     </mat-card-header>
     <mat-card-content>
-
+        
         <div class="daxa-card sidebar-card mb-25 border-radius bg-white border-none d-block"
             [class.component-dark-theme]="themeService.isDark()" [class.rtl-enabled]="themeService.isRTLEnabled()">
             
@@ -25,7 +23,9 @@
             </div>
         </div>
 
-
+        <h5 class="mt-0 mb-0">
+            Titulo
+        </h5>
         <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree">
             <!-- This is the tree node template for leaf nodes -->
             <!-- There is inline padding applied to this node using styles.
@@ -85,7 +85,7 @@
                                 <mat-label>
                                     Titulo
                                 </mat-label>
-                                <input formControlName="titulo" matInput placeholder="Ejm: Articulo 5..">
+                                <input formControlName="titulo" matInput placeholder="Ejm: Articulo 5.." >
                             </mat-form-field>
                         </div>
                         <div class="col-md-12">
