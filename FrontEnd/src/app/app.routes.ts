@@ -14,12 +14,10 @@ export const APP_ROUTES: Routes = [
     },
     {
         path: '',
-        component: PruebaPageComponent
+        component: ContenidoComponent
     },
     {path: 'articulos', component: ContenidoComponent},
     {path: 'historial/:id', component: ContenidoComponentPublico},
     {path: 'internal-error', component: InternalErrorComponent},
     {path: '**', redirectTo: 'articulos'}
-    // Here add new pages component
-    /* {path: '**', component: NotFoundComponent} */ // This line will remain down from the whole pages component list
 ];

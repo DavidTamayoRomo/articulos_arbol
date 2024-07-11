@@ -133,13 +133,13 @@
 
                             <!-- Row shown when there is no matching data. -->
                             <tr class="mat-row" *matNoDataRow>
-                                <td class="mat-cell" colspan="4">No se encuentra coincidencia con el campo filtrado:
+                                <td class="mat-cell" colspan="4">Información no existente: 
                                     "{{input.value}}"</td>
                             </tr>
 
                         </table>
                     </div>
-                    <mat-paginator [pageSizeOptions]="[3, 6, 12, 18, 50, 100]" showFirstLastButtons></mat-paginator>
+                    <mat-paginator #paginator1 [pageSizeOptions]="[3, 6, 12, 18, 50, 100]" showFirstLastButtons></mat-paginator>
                 </div>
             </mat-card-content>
         </mat-card>
@@ -258,7 +258,7 @@
                     <button mat-button (click)="toggleClass1()">
                         Cancelar
                     </button>
-                    <button mat-button (click)="editar()">
+                    <button style="background-color: #1275bb ;color: #ffffff;" mat-button (click)="editar()">
                         Editar
                     </button>
                 </div>
