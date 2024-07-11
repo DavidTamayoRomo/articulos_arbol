@@ -339,6 +339,7 @@ export class TwNestedNodesComponent {
 
 
     abrirModalNuevo(node: Node) {
+        this.borrarForm();
         this.classApplied = !this.classApplied;
         console.log(this.classApplied);
         console.log(node);
