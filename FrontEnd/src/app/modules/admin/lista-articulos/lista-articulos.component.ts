@@ -79,6 +79,13 @@ interface Node {
 })
 export class ListaArticulosComponent {
 
+  @ViewChild('paginator1') set paginator1(pager:MatPaginator) {
+    if (pager) {
+      this.dataSource.paginator = pager;
+      this.dataSource.paginator._intl.itemsPerPageLabel = "Item por página";
+    }
+  }
+
   chipsControl = new FormControl(['Activas']);
   states: string[] = ['activo'];
 
@@ -351,14 +358,14 @@ export class ListaArticulosComponent {
     let jsonData = this.dataSource.data;
 
     const docDefinition = this.buildDocument(jsonData);
-    pdfMake.createPdf(docDefinition).open();
+    pdfMake.createPdf(docDefinition).download("CódigoMunicipal.pdf");
 
     //this.exportToPDFImport(jsonData);
   }
 
   exportToPDFImport(jsonData: any) {
     let docDefinition = this.jsonToDocDefinition(jsonData);
-    pdfMake.createPdf(docDefinition).download("download.pdf");
+    pdfMake.createPdf(docDefinition).download("CódigoMunicipal.pdf");
   }
 
 
