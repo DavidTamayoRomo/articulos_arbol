@@ -83,12 +83,9 @@
                                     Contenido
                                 </th>
                                 <td mat-cell *matCellDef="let element">
-                                    <span [innerHTML]="element.name | highlight:input.value"></span><br>
-                                    <!-- <span
-                                        [innerHTML]="element.content_transform | highlight:input.value"></span><br><br> -->
                                     <span
                                         [innerHTML]="element.content | highlight:input.value"></span><br><br>
-                                    Nota: <a (click)="abrirLink(element?.referencia)">{{element?.referencia}}</a>
+                                    <div *ngIf="element?.referencia">Nota: {{element?.referencia}}</div>
                                 </td>
                             </ng-container>
 
