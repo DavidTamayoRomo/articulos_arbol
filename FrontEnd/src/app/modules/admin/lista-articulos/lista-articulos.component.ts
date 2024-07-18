@@ -985,16 +985,19 @@ export class ListaArticulosComponent {
 
 
   limpiar() {
-    this.checkArticulo.checked = false;
+    /* this.checkArticulo.checked = false;
+    //this.dataSource.paginator = this.paginator;
+    this.sendMessage();
+    this.myInputRef.nativeElement.value = '';
     this.articuloService.getArticulosByState(this.states).subscribe({
       next: (data: any) => {
+        console.log(data);
         this.dataSource.data = this.buildCompleteList(data);
-        this.dataSource.paginator = this.paginator;
-        this.sendMessage();
-        this.myInputRef.nativeElement.value = '';
+        
       },
       error: (err) => { console.log("Error al cargar los Artículos") }
-    });
+    }); */
+    document.location.reload();
   }
 
 
