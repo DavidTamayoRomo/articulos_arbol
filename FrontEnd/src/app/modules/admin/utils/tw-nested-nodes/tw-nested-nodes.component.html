@@ -59,7 +59,7 @@
 </mat-card>
 
 
-<div class="add-new-task-popup" [class.active]="classApplied" [class.rtl-enabled]="themeService.isRTLEnabled()">
+<div  class="add-new-task-popup" [class.active]="classApplied" [class.rtl-enabled]="themeService.isRTLEnabled()">
     <div class="popup-dialog">
         <mat-card class="daxa-card mb-25 border-radius bg-white border-none d-block">
             <mat-card-header >
@@ -88,8 +88,8 @@
                                 <input formControlName="titulo" matInput placeholder="Ejm: Articulo 5.." >
                             </mat-form-field>
                         </div>
-                        <div class="col-md-12">
-                            <app-editor-quill (contentChanged)="handleEditorContentChanged($event)"></app-editor-quill>
+                        <div class="col-md-12" *ngIf="showEditor">
+                            <app-editor-quill (contentChanged)="handleEditorContentChanged($event)" [message]="parentMessage"></app-editor-quill>
                         </div>
                         <div class="col-md-12">
                             <label class="main-label d-block lh-1 text-black">

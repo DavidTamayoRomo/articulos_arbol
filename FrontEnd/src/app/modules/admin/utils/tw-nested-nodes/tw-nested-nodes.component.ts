@@ -21,6 +21,7 @@ import { DataService } from '../../services/data.service';
 import { EstadosService } from '../../services/estados.service';
 import { EditorQuillComponent } from '../editor-quill/editor-quill.component';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
 
 interface Node {
     id?: string;
@@ -44,11 +45,12 @@ interface Node {
 @Component({
     selector: 'app-tw-nested-nodes',
     standalone: true,
-    imports: [MatTreeModule, MatButtonModule, MatIconModule, FormsModule, MatCardModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, EditorsComponent, HasRoleDirective, EditorQuillComponent],
+    imports: [CommonModule,MatTreeModule, MatButtonModule, MatIconModule, FormsModule, MatCardModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, EditorsComponent, HasRoleDirective, EditorQuillComponent, ],
     templateUrl: './tw-nested-nodes.component.html',
     styleUrl: './tw-nested-nodes.component.scss'
 })
 export class TwNestedNodesComponent {
+    showEditor = true; 
     @Output() NodoSeleccionado = new EventEmitter<Node[]>();
 
     // Añade un BehaviorSubject para manejar los datos del árbol
@@ -67,6 +69,8 @@ export class TwNestedNodesComponent {
 
     form!: FormGroup;
     states:string[]= ['activo'];
+
+    parentMessage: any ='';
 
     private fb = inject(FormBuilder);
     constructor(
@@ -351,6 +355,9 @@ export class TwNestedNodesComponent {
     toggleClass() {
         this.borrarForm();
         this.classApplied = !this.classApplied;
+        
+
+        
     }
 
     guardarNodo() {
@@ -391,11 +398,12 @@ export class TwNestedNodesComponent {
     crearArticulo(banderaPadre: boolean) {
         this.banderaPadre = banderaPadre;
         this.toggleClass();
-        this.borrarForm();
+        
     }
 
     
     borrarForm() {
+        this.parentMessage ='';
         this.form.patchValue({
             titulo: null,
             contenido: null,
@@ -403,7 +411,9 @@ export class TwNestedNodesComponent {
             referencia: null,
         })
         this.form.reset();
-        
+
+        this.showEditor = false;
+        setTimeout(() => this.showEditor = true, 0);
     }
 
     sanitizeContent(content: string): SafeHtml {

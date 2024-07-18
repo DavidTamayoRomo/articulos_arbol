@@ -40,7 +40,7 @@ export class EditorQuillComponent {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['message']) {
-      
+      console.log('cambie de estado');
       this.currentValue = this.message;
     }
 
@@ -53,5 +53,9 @@ export class EditorQuillComponent {
     this.contentChanged.emit(html);
   }
 
+  ngOnDestroy() {
+    console.log('EditorQuillComponent destroyed');
+    // Aquí puedes realizar cualquier limpieza adicional que necesites
+  }
 
 }

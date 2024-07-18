@@ -79,7 +79,7 @@ interface Node {
 })
 export class ListaArticulosComponent {
 
-  @ViewChild('paginator1') set paginator1(pager:MatPaginator) {
+  @ViewChild('paginator1') set paginator1(pager: MatPaginator) {
     if (pager) {
       this.dataSource.paginator = pager;
       this.dataSource.paginator._intl.itemsPerPageLabel = "Item por página";
@@ -117,10 +117,14 @@ export class ListaArticulosComponent {
     this.classApplied = !this.classApplied;
   }
   toggleClass1() {
+    
     this.classApplied1 = !this.classApplied1;
+    if (!this.classApplied1) {
+      this.limpiarCampos();
+    }
   }
 
-  limpiarCampos(){
+  limpiarCampos() {
     this.form.patchValue({
       titulo: null,
       contenido: null,
@@ -269,7 +273,7 @@ export class ListaArticulosComponent {
       },
       error: (err) => { console.log("Error al cargar los Artículos") }
     });
-    
+
   }
 
   exportToExcel(data: any[], fileName: string): void {
@@ -652,7 +656,7 @@ export class ListaArticulosComponent {
         });
         paragraph.addChildElement(textRun);
       });
-    }else{
+    } else {
       const textRun = new TextRun({
         text: item?.text,
         bold: item.bold || false,
