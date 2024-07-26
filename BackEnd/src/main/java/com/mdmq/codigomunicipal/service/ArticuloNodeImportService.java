@@ -25,13 +25,13 @@ public class ArticuloNodeImportService {
             if (row.getRowNum() == 0)
                 continue; // Saltar la fila de encabezado
 
-            String level = getCellAsFormattedString(row.getCell(0), workbook);
-            String name = getCellAsFormattedString(row.getCell(1), workbook);
-            String content = getCellAsFormattedString(row.getCell(2), workbook);
-            String state = getCellAsFormattedString(row.getCell(3), workbook);
-            String referencia = getCellAsFormattedString(row.getCell(4), workbook);
-            String usuarioCreacion = getCellAsFormattedString(row.getCell(5), workbook);
-            String usuarioModificacion = getCellAsFormattedString(row.getCell(6), workbook);
+            String level = getCellAsFormattedString(row.getCell(0), workbook, false);
+            String name = getCellAsFormattedString(row.getCell(1), workbook, false);
+            String content = getCellAsFormattedString(row.getCell(2), workbook, true);
+            String state = getCellAsFormattedString(row.getCell(3), workbook, false);
+            String referencia = getCellAsFormattedString(row.getCell(4), workbook, false);
+            String usuarioCreacion = getCellAsFormattedString(row.getCell(5), workbook, false);
+            String usuarioModificacion = getCellAsFormattedString(row.getCell(6), workbook, false);
 
             sb.append(level).append(",")
               .append(name).append(",")
@@ -74,28 +74,30 @@ public class ArticuloNodeImportService {
         inputStream.close();
     }
 
-    public String getCellAsFormattedString(Cell cell, Workbook workbook) {
+    public String getCellAsFormattedString(Cell cell, Workbook workbook, boolean formatContentColumn) {
         if (cell == null) return ""; // Si la celda es null, regresa una cadena vacía.
-
+    
         CellStyle style = cell.getCellStyle();
         Font font = workbook.getFontAt(style.getFontIndex());
-
-        String cellValue = "";
+    
+        StringBuilder cellValue = new StringBuilder();
+    
+        // Capturar el valor de la celda
         switch (cell.getCellType()) {
             case STRING:
-                cellValue = cell.getStringCellValue();
+                cellValue.append(cell.getStringCellValue());
                 break;
             case NUMERIC:
                 double numericValue = cell.getNumericCellValue();
-                cellValue = (numericValue == Math.floor(numericValue)) && !Double.isInfinite(numericValue)
-                            ? String.format("%.0f", numericValue)
-                            : String.valueOf(numericValue);
+                cellValue.append((numericValue == Math.floor(numericValue)) && !Double.isInfinite(numericValue)
+                                ? String.format("%.0f", numericValue)
+                                : String.valueOf(numericValue));
                 break;
             case BOOLEAN:
-                cellValue = String.valueOf(cell.getBooleanCellValue());
+                cellValue.append(cell.getBooleanCellValue());
                 break;
             case FORMULA:
-                cellValue = handleFormula(cell, workbook);
+                cellValue.append(handleFormula(cell, workbook));
                 break;
             case BLANK:
                 return "";
@@ -103,17 +105,46 @@ public class ArticuloNodeImportService {
                 return "";
         }
 
-        // Agregar etiquetas HTML para negritas y cursivas
-        if (font.getBold()) {
-            cellValue = "<b>" + cellValue + "</b>";
+    
+        if (formatContentColumn) {
+            // Aplicar estilos de fuente
+            if (font.getBold()) {
+                cellValue.insert(0, "<strong>").append("</strong>");
+            }
+            if (font.getItalic()) {
+                cellValue.insert(0, "<i>").append("</i>");
+            }
+            if (font.getUnderline() != Font.U_NONE) {
+                cellValue.insert(0, "<u>").append("</u>");
+            }
+    
+            // Aplicar alineación
+            switch (style.getAlignment()) {
+                case CENTER:
+                    cellValue.insert(0, "<p class='ql-align-center'>").append("</p>");
+                    break;
+                case LEFT:
+                    cellValue.insert(0, "<p class='ql-align-left'>").append("</p>");
+                    break;
+                case RIGHT:
+                    cellValue.insert(0, "<p class='ql-align-right'>").append("</p>");
+                    break;
+                case JUSTIFY:
+                    cellValue.insert(0, "<p class='ql-align-justify'>").append("</p>");
+                    break;
+                default:
+                    break;
+            }
+    
+            // Aplicar indentación
+            if (style.getIndention() > 0) {
+                cellValue.insert(0, "<p class='ql-indent-" + style.getIndention() + "'>").append("</p>");
+            }
         }
-        if (font.getItalic()) {
-            cellValue = "<i>" + cellValue + "</i>";
-        }
-
-        return cellValue.replace("\n", "<br>"); // Mantener saltos de línea
+    
+        return cellValue.toString().replace("\n", "<br>"); // Mantener saltos de línea
     }
-
+    
     private String handleFormula(Cell cell, Workbook workbook) {
         switch (cell.getCachedFormulaResultType()) {
             case STRING:
@@ -129,5 +160,4 @@ public class ArticuloNodeImportService {
                 return "";
         }
     }
-
 }
