@@ -77,83 +77,93 @@ public class ArticuloNodeImportService {
     }
 
     public String getCellAsFormattedString(Cell cell, Workbook workbook, boolean formatContentColumn) {
-    if (cell == null) return ""; // Si la celda es null, regresa una cadena vacía.
-
-    StringBuilder cellValue = new StringBuilder();
-
-    // Capturar el valor de la celda
-    switch (cell.getCellType()) {
-        case STRING:
-            if (formatContentColumn && cell.getRichStringCellValue() instanceof XSSFRichTextString) {
-                XSSFRichTextString richText = (XSSFRichTextString) cell.getRichStringCellValue();
-                for (int i = 0; i < richText.length(); i++) {
-                    XSSFFont font = richText.getFontOfFormattingRun(i);
-                    String text = richText.getString().substring(i, i + 1);
-                    if (font != null && font.getBold()) {
-                        text = "<strong>" + text + "</strong>";
-                    }
-                    if (font != null && font.getItalic()) {
-                        text = "<i>" + text + "</i>";
-                    }
-                    if (font != null && font.getUnderline() != Font.U_NONE) {
-                        text = "<u>" + text + "</u>";
-                    }
-                    cellValue.append(text);
+        if (cell == null) return ""; // Si la celda es null, regresa una cadena vacía.
+    
+        StringBuilder cellValue = new StringBuilder();
+    
+        if (cell.getCellType() == CellType.STRING) {
+            XSSFRichTextString richText = (XSSFRichTextString) cell.getRichStringCellValue();
+            int length = richText.length();
+            int startIndex = 0;
+    
+            while (startIndex < length) {
+                XSSFFont startFont = richText.getFontAtIndex(startIndex);
+                int endIndex = startIndex;
+    
+                while (endIndex < length && (richText.getFontAtIndex(endIndex) == null || richText.getFontAtIndex(endIndex).equals(startFont))) {
+                    endIndex++;
                 }
-            } else {
-                cellValue.append(cell.getStringCellValue());
+    
+                String textPart = richText.getString().substring(startIndex, endIndex);
+    
+                if (startFont != null) {
+                    if (startFont.getBold()) {
+                        textPart = "<strong>" + textPart + "</strong>";
+                    }
+                    if (startFont.getItalic()) {
+                        textPart = "<i>" + textPart + "</i>";
+                    }
+                    if (startFont.getUnderline() != Font.U_NONE) {
+                        textPart = "<u>" + textPart + "</u>";
+                    }
+                }
+    
+                cellValue.append(textPart);
+                startIndex = endIndex;
             }
-            break;
-        case NUMERIC:
-            double numericValue = cell.getNumericCellValue();
-            cellValue.append((numericValue == Math.floor(numericValue)) && !Double.isInfinite(numericValue)
+        } else {
+            switch (cell.getCellType()) {
+                case NUMERIC:
+                    double numericValue = cell.getNumericCellValue();
+                    cellValue.append((numericValue == Math.floor(numericValue)) && !Double.isInfinite(numericValue)
                             ? String.format("%.0f", numericValue)
                             : String.valueOf(numericValue));
-            break;
-        case BOOLEAN:
-            cellValue.append(cell.getBooleanCellValue());
-            break;
-        case FORMULA:
-            cellValue.append(handleFormula(cell, workbook));
-            break;
-        case BLANK:
-            return "";
-        default:
-            return "";
-    }
-
-    // Mantener saltos de línea
-    String result = cellValue.toString().replace("\n", "<br>");
-
-    // Aplicar alineación si es necesario
-    if (formatContentColumn) {
-        CellStyle style = cell.getCellStyle();
-        switch (style.getAlignment()) {
-            case CENTER:
-                result = "<p class='ql-align-center'>" + result + "</p>";
-                break;
-            case LEFT:
-                result = "<p class='ql-align-left'>" + result + "</p>";
-                break;
-            case RIGHT:
-                result = "<p class='ql-align-right'>" + result + "</p>";
-                break;
-            case JUSTIFY:
-                result = "<p class='ql-align-justify'>" + result + "</p>";
-                break;
-            default:
-                break;
+                    break;
+                case BOOLEAN:
+                    cellValue.append(cell.getBooleanCellValue());
+                    break;
+                case FORMULA:
+                    cellValue.append(handleFormula(cell, workbook));
+                    break;
+                case BLANK:
+                    return "";
+                default:
+                    return "";
+            }
         }
-
-        // Aplicar indentación
-        if (style.getIndention() > 0) {
-            result = "<p class='ql-indent-" + style.getIndention() + "'>" + result + "</p>";
+    
+        // Mantener saltos de línea
+        String result = cellValue.toString().replace("\n", "<br>");
+    
+        // Aplicar alineación si es necesario
+        if (formatContentColumn) {
+            CellStyle style = cell.getCellStyle();
+            switch (style.getAlignment()) {
+                case CENTER:
+                    result = "<p class='ql-align-center'>" + result + "</p>";
+                    break;
+                case LEFT:
+                    result = "<p class='ql-align-left'>" + result + "</p>";
+                    break;
+                case RIGHT:
+                    result = "<p class='ql-align-right'>" + result + "</p>";
+                    break;
+                case JUSTIFY:
+                    result = "<p class='ql-align-justify'>" + result + "</p>";
+                    break;
+                default:
+                    break;
+            }
+    
+            // Aplicar indentación
+            if (style.getIndention() > 0) {
+                result = "<p class='ql-indent-" + style.getIndention() + "'>" + result + "</p>";
+            }
         }
+    
+        return result;
     }
-
-    return result;
-}
-
+    
     private String handleFormula(Cell cell, Workbook workbook) {
         switch (cell.getCachedFormulaResultType()) {
             case STRING:
