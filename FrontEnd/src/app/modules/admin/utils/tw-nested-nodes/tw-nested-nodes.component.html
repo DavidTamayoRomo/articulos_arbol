@@ -2,18 +2,14 @@
     [class.component-dark-theme]="themeService.isDark()" [class.rtl-enabled]="themeService.isRTLEnabled()">
     <mat-card-header>
         <mat-card-title>
-            
             <button mat-button class=" p-0 h-auto" (click)="crearArticulo(true)" *hasRole="['Administrador']" style="color: #1275bb;">
                 + Agregar Contenido
             </button>
-
         </mat-card-title>
     </mat-card-header>
     <mat-card-content>
-        
         <div class="daxa-card sidebar-card mb-25 border-radius bg-white border-none d-block"
             [class.component-dark-theme]="themeService.isDark()" [class.rtl-enabled]="themeService.isRTLEnabled()">
-            
             <div class="search-box position-relative">
                 <i class="material-symbols-outlined">
                     search
@@ -22,20 +18,18 @@
                     class="input-search d-block w-100 border-none outline-0" placeholder="Buscar...">
             </div>
         </div>
-
         <h5 class="mt-0 mb-0">
             Titulo
         </h5>
-        <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree">
-            <!-- This is the tree node template for leaf nodes -->
-            <!-- There is inline padding applied to this node using styles.
-        This padding value depends on the mat-icon-button width. -->
+        <!-- Mostrar el spinner mientras isLoading es verdadero -->
+        <mat-spinner *ngIf="isLoading"></mat-spinner>
+        <!-- Mostrar el árbol cuando isLoading sea falso -->
+        <mat-tree *ngIf="!isLoading" [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree">
             <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle class="node-name" (click)="logNodeData(node)"
                 [class.highlighted]="node.isVisible">
                 {{node.name}}
                  <span class="material-symbols-outlined" (click)="abrirModalNuevo(node)" *hasRole="['Administrador']">add</span>
             </mat-tree-node>
-            <!-- This is the tree node template for expandable nodes -->
             <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
                 <div class="mat-tree-node" [class.highlighted]="node.isVisible">
                     <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
@@ -44,12 +38,9 @@
                         </mat-icon>
                     </button>
                     <span (click)="logNodeData(node)" class="node-name"
-                        [class.highlighted]="node.isVisible"  [innerHTML]="sanitizeContent(node.name)"></span>
-                    <!-- Botón para agregar un nuevo hijo al nodo actual -->
+                        [class.highlighted]="node.isVisible" [innerHTML]="sanitizeContent(node.name)"></span>
                     <span class="material-symbols-outlined" (click)="abrirModalNuevo(node)" *hasRole="['Administrador']">add</span>
                 </div>
-                <!-- There is inline padding applied to this div using styles.
-            This padding value depends on the mat-icon-button width.  -->
                 <div [class.example-tree-invisible]="!treeControl.isExpanded(node)" role="group">
                     <ng-container matTreeNodeOutlet></ng-container>
                 </div>
@@ -58,12 +49,11 @@
     </mat-card-content>
 </mat-card>
 
-
-<div  class="add-new-task-popup" [class.active]="classApplied" [class.rtl-enabled]="themeService.isRTLEnabled()">
+<div class="add-new-task-popup" [class.active]="classApplied" [class.rtl-enabled]="themeService.isRTLEnabled()">
     <div class="popup-dialog">
         <mat-card class="daxa-card mb-25 border-radius bg-white border-none d-block">
-            <mat-card-header >
-                <mat-card-title >
+            <mat-card-header>
+                <mat-card-title>
                     <h5 class="mt-0 mb-0">
                         Agregar nuevo contenido
                     </h5>
@@ -85,7 +75,7 @@
                                 <mat-label>
                                     Titulo
                                 </mat-label>
-                                <input formControlName="titulo" matInput placeholder="Ejm: Articulo 5.." >
+                                <input formControlName="titulo" matInput placeholder="Ejm: Articulo 5..">
                             </mat-form-field>
                         </div>
                         <div class="col-md-12" *ngIf="showEditor">
@@ -127,7 +117,7 @@
                     <button mat-button (click)="toggleClass()">
                         Cancelar
                     </button>
-                    <button mat-button (click)="guardarNodo()" style="background-color: #1275bb ;color: #ffffff;">
+                    <button mat-button (click)="guardarNodo()" style="background-color: #1275bb; color: #ffffff;">
                         Crear
                     </button>
                 </div>

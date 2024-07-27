@@ -1,5 +1,5 @@
 import { NestedTreeControl } from '@angular/cdk/tree';
-import { Component, EventEmitter, Output,  inject } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { MatTreeNestedDataSource, MatTreeModule } from '@angular/material/tree';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,7 +8,7 @@ import { CustomizerSettingsService } from '../../../../common/customizer-setting
 import { MatCardModule } from '@angular/material/card';
 import { BehaviorSubject } from 'rxjs';
 import { Validators } from 'ngx-editor';
-import {  MatFormFieldModule } from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { EditorsComponent } from '../editors/editors.component';
@@ -22,6 +22,7 @@ import { EstadosService } from '../../services/estados.service';
 import { EditorQuillComponent } from '../editor-quill/editor-quill.component';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 interface Node {
     id?: string;
@@ -40,22 +41,34 @@ interface Node {
     fecha_modificacion?: Date;
 }
 
-
-
 @Component({
     selector: 'app-tw-nested-nodes',
     standalone: true,
-    imports: [CommonModule,MatTreeModule, MatButtonModule, MatIconModule, FormsModule, MatCardModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, EditorsComponent, HasRoleDirective, EditorQuillComponent, ],
+    imports: [
+        CommonModule,
+        MatTreeModule,
+        MatButtonModule,
+        MatIconModule,
+        FormsModule,
+        MatCardModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        EditorsComponent,
+        HasRoleDirective,
+        EditorQuillComponent,
+        MatProgressSpinnerModule
+    ],
     templateUrl: './tw-nested-nodes.component.html',
     styleUrl: './tw-nested-nodes.component.scss'
 })
 export class TwNestedNodesComponent {
-    showEditor = true; 
+    showEditor = true;
     @Output() NodoSeleccionado = new EventEmitter<Node[]>();
 
-    // Añade un BehaviorSubject para manejar los datos del árbol
     private dataChange = new BehaviorSubject<Node[]>([]);
-
+    isLoading = true; // Estado de carga
     treeControl = new NestedTreeControl<Node>(node => node.children);
     dataSource = new MatTreeNestedDataSource<Node>();
     searchText = '';
@@ -68,11 +81,10 @@ export class TwNestedNodesComponent {
     banderaPadre = false;
 
     form!: FormGroup;
-    states:string[]= ['activo'];
+    states: string[] = ['activo'];
 
-    parentMessage: any ='';
+    parentMessage: any = '';
 
-    private fb = inject(FormBuilder);
     constructor(
         public themeService: CustomizerSettingsService,
         public articuloService: ArticuloService,
@@ -80,11 +92,12 @@ export class TwNestedNodesComponent {
         private keycloakauthService: KeycloakAuthService,
         private dataService: DataService,
         private estadosService: EstadosService,
-        private sanitizer: DomSanitizer
-    ) {
+        private sanitizer: DomSanitizer,
+        private fb: FormBuilder // Cambié la inyección aquí en lugar de usar `inject(FormBuilder)`
+    ) { }
 
-    }
     message: string;
+
     ngOnInit(): void {
         this.form = this.fb.group({
             titulo: [null, [Validators.required]],
@@ -92,8 +105,7 @@ export class TwNestedNodesComponent {
             estado: [null, [Validators.required]],
             referencia: [null],
         });
-        //this.obtenerTodos();
-        this.obtenerTodosEstados(['activo'])
+        this.obtenerTodosEstados(['activo']);
         this.dataService.currentMessage.subscribe(message => {
             this.message = message;
             console.log(this.message);
@@ -101,28 +113,33 @@ export class TwNestedNodesComponent {
             this.obtenerTodosEstados(this.states);
         });
 
-        this.estadosService.currentMessage.subscribe((message:string[])=>{
+        this.estadosService.currentMessage.subscribe((message: string[]) => {
             this.obtenerTodosEstados(message);
             this.states = message;
         })
-
     }
 
-    obtenerTodosEstados(lista:string[]) {
+    obtenerTodosEstados(lista: string[]) {
+        this.isLoading = true; // Activar el estado de carga
         this.articuloService.getArticulosByState(lista).subscribe({
             next: (data: any) => {
                 console.log(data);
                 this.dataSource.data = data;
-                this.dataChange.next(data); // Inicializa el BehaviorSubject con los datos del árbol
-                this.dataChange.subscribe(data => this.dataSource.data = data); // Suscríbete a los cambios y actualiza la fuente de datos
+                this.dataChange.next(data);
                 this.resetTree();
+                setTimeout(() => {
+                    this.isLoading = false;
+                }, 8000);
+                
             },
-            error: (err) => { console.log("Error al cargar los Artículos") }
-        })
+            error: (err) => {
+                console.log("Error al cargar los Artículos");
+                this.isLoading = false;
+            }
+        });
     }
 
     hasChild = (_: number, node: Node) => !!node.children && node.children.length > 0;
-
 
     logNodeData(node: any) {
         console.log(node);
@@ -131,34 +148,31 @@ export class TwNestedNodesComponent {
 
     search() {
         const searchText = this.searchText.toLowerCase();
-        this.resetTree(); // Restablece el árbol a su estado original antes de cada búsqueda
+        this.resetTree();
 
         if (searchText) {
             this.dataSource.data.forEach(node => {
                 this.filterNodes(node, searchText);
             });
-            this.expandNodes(); // Función para expandir solo los nodos necesarios
+            this.expandNodes();
             const visibleNodes = this.getVisibleNodes(this.dataSource.data);
-            console.log("Nodos visibles tras la búsqueda:", visibleNodes); // Imprimir los nodos visibles
-            //Enviar al componente los visibles
+            console.log("Nodos visibles tras la búsqueda:", visibleNodes);
             this.NodoSeleccionado.emit(visibleNodes);
         } else {
             this.articuloService.getArticulosByState(this.states).subscribe({
                 next: (data: any) => {
                     console.log(data);
                     this.dataSource.data = data;
-                    this.dataChange.next(data); // Inicializa el BehaviorSubject con los datos del árbol
-                    this.dataChange.subscribe(data => this.dataSource.data = data); // Suscríbete a los cambios y actualiza la fuente de datos
+                    this.dataChange.next(data);
                     this.resetTree();
                     this.NodoSeleccionado.emit(data);
                 },
                 error: (err) => { console.log("Error al cargar los Artículos") }
-            })
-            this.treeControl.collapseAll(); // Colapsa todo si no hay texto de búsqueda
+            });
+            this.treeControl.collapseAll();
         }
     }
 
-    // Función para restablecer la visibilidad
     resetVisibility(nodes: Node[]) {
         nodes.forEach(node => {
             node.isVisible = false;
@@ -173,31 +187,28 @@ export class TwNestedNodesComponent {
         this.resetVisibility(this.dataSource.data);
     }
 
-    // Función recursiva para buscar y marcar nodos
     filterNodes(node: Node, searchText: string, ancestors: Node[] = []): boolean {
         node.isVisible = node.name.toLowerCase().includes(searchText);
 
-        if (node.children) {
+        if (node.children && node.children.length > 0) {
             const childrenVisible = node.children.map(child => this.filterNodes(child, searchText, [...ancestors, node])).some(visible => visible);
             node.isVisible = node.isVisible || childrenVisible;
         }
 
         if (node.isVisible && ancestors.length) {
-            // Aquí solo marcas los ancestros para expansión, pero la expansión real la haremos después
             ancestors.forEach(ancestor => ancestor.isExpanded = true);
         }
 
         return node.isVisible;
     }
 
-
     expandNodes() {
         const expandRecursive = (node: Node) => {
             if (node.isExpanded) {
                 this.treeControl.expand(node);
-                node.isExpanded = false; // Opcional: limpiar la marca si no se necesita después
+                node.isExpanded = false;
             }
-            if (node.children) {
+            if (node.children && node.children.length > 0) {
                 node.children.forEach(child => expandRecursive(child));
             }
         };
@@ -205,15 +216,11 @@ export class TwNestedNodesComponent {
         this.dataSource.data.forEach(node => expandRecursive(node));
     }
 
-
     agregarPadre() {
-
         let datosKeycloak: any = this.keycloakauthService.getLoggedUser();
         let usuarioCreacion: any = datosKeycloak.preferred_username;
 
         const pipeTextFromObject = new TextFromObjectPipe();
-        console.log(pipeTextFromObject.transform(this.content));
-        // Añadir lógica para generar un nuevo nodo
         const nuevoHijo: Node = {
             name: this.form.controls['titulo'].value,
             content: this.content,
@@ -226,24 +233,17 @@ export class TwNestedNodesComponent {
             fecha_creacion: new Date(),
             usuario_creacion: usuarioCreacion
         };
-        console.log(nuevoHijo);
-        // actualizamos la fuente de datos para forzar un cambio de detección.
         this.actualizarDatos();
-        // No modifiques directamente this.dataSource.data. En su lugar, emite un nuevo valor a través de dataChange
         this.dataChange.next(this.dataSource.data);
 
-
-
         if (this.content && this.form.valid) {
-            //guardar base de datos
             this.articuloService.createArticulo(nuevoHijo).subscribe({
                 next: (resp: any) => {
-                    this._snackBar.open('El registro se guardo con éxito', 'Cerrar', {
+                    this._snackBar.open('El registro se guardó con éxito', 'Cerrar', {
                         horizontalPosition: 'right',
                         verticalPosition: 'top',
                     });
                     this.classApplied = !this.classApplied;
-                    console.log(resp);
                     this.banderaPadre = false;
                     this.obtenerTodosEstados(this.states);
                 },
@@ -257,16 +257,12 @@ export class TwNestedNodesComponent {
                 verticalPosition: 'top',
             });
         }
-
     }
 
     agregarHijo(node: Node) {
         let datosKeycloak: any = this.keycloakauthService.getLoggedUser();
         let usuarioCreacion: any = datosKeycloak.preferred_username;
         const pipeTextFromObject = new TextFromObjectPipe();
-        console.log(node);
-        console.log(this.datoSeleccionadoGuardar);
-        // Añadir lógica para generar un nuevo nodo
         const nuevoHijo: Node = {
             name: this.form.controls['titulo'].value,
             content: this.content,
@@ -283,24 +279,18 @@ export class TwNestedNodesComponent {
             node.children = [];
         }
         node.children.push(nuevoHijo);
-        // actualizamos la fuente de datos para forzar un cambio de detección.
         this.actualizarDatos();
-        // No modifiques directamente this.dataSource.data. En su lugar, emite un nuevo valor a través de dataChange
         this.dataChange.next(this.dataSource.data);
 
-
         if (this.content && this.form.valid) {
-            //guardar base de datos
             this.classApplied = !this.classApplied;
-            //guardar base de datos
             if (this.datoSeleccionadoGuardar?.id_padre == null) {
                 this.articuloService.createHijos(nuevoHijo, this.datoSeleccionadoGuardar?.id, this.datoSeleccionadoGuardar?.id).subscribe({
                     next: (resp: any) => {
-                        this._snackBar.open('El registro se guardo con éxito', 'Cerrar', {
+                        this._snackBar.open('El registro se guardó con éxito', 'Cerrar', {
                             horizontalPosition: 'right',
                             verticalPosition: 'top',
                         });
-                        console.log(resp);
                         this.obtenerTodosEstados(this.states);
                     },
                     error: err => {
@@ -310,7 +300,6 @@ export class TwNestedNodesComponent {
             } else {
                 this.articuloService.createHijos(nuevoHijo, this.datoSeleccionadoGuardar?.id_padre, this.datoSeleccionadoGuardar?.id).subscribe({
                     next: (resp: any) => {
-                        console.log(resp);
                         this.obtenerTodosEstados(this.states);
                     },
                     error: err => {
@@ -324,56 +313,37 @@ export class TwNestedNodesComponent {
                 verticalPosition: 'top',
             });
         }
-
-
     }
 
     private actualizarDatos() {
-        // Forzamos una nueva referencia para el array de datos para que Angular detecte el cambio.
         const data = this.dataSource.data;
         this.dataSource.data = [];
         this.dataSource.data = data;
     }
 
-
-    /* abrirModalNuevo(node: Node) {
-
-    } */
-
-
-
     abrirModalNuevo(node: Node) {
         this.borrarForm();
         this.classApplied = !this.classApplied;
-        console.log(this.classApplied);
-        console.log(node);
         this.datoSeleccionado = node;
         this.datoSeleccionadoGuardar = JSON.parse(JSON.stringify(node));
-        console.log(this.datoSeleccionadoGuardar);
     }
 
     toggleClass() {
         this.borrarForm();
         this.classApplied = !this.classApplied;
-        
-
-        
     }
 
     guardarNodo() {
-        console.log(this.datoSeleccionado);
         if (this.banderaPadre) {
             this.agregarPadre();
         } else {
             this.agregarHijo(this.datoSeleccionado);
         }
-
     }
 
     handleEditorContentChanged(content: string) {
         this.content = content;
     }
-
 
     getVisibleNodes(nodes: Node[]): Node[] {
         const visibleNodes: Node[] = [];
@@ -394,22 +364,19 @@ export class TwNestedNodesComponent {
         return visibleNodes;
     }
 
-
     crearArticulo(banderaPadre: boolean) {
         this.banderaPadre = banderaPadre;
         this.toggleClass();
-        
     }
 
-    
     borrarForm() {
-        this.parentMessage ='';
+        this.parentMessage = '';
         this.form.patchValue({
             titulo: null,
             contenido: null,
             estado: null,
             referencia: null,
-        })
+        });
         this.form.reset();
 
         this.showEditor = false;
@@ -419,6 +386,4 @@ export class TwNestedNodesComponent {
     sanitizeContent(content: string): SafeHtml {
         return this.sanitizer.bypassSecurityTrustHtml(content);
     }
-
-
 }

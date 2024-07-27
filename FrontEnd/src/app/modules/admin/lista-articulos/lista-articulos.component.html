@@ -43,10 +43,16 @@
                         <button type="button" mat-button matTooltip="Descargar Excel" (click)="exportToCSV()">
                             <img src="assets/images/EXCEL.png" width="40px">
                         </button>
-                        <button type="button" mat-button matTooltip="Descargar PDF" (click)="exportToPDF()">
-                            <img src="assets/images/PDF-blanco.png" width="40px">
+                        <div *ngIf="isLoadingPDF" class="spinner-container">
+                            <mat-spinner color="accent"></mat-spinner>
+                        </div>
+                        <button *ngIf="!isLoadingPDF" type="button" mat-button matTooltip="Descargar PDF" (click)="exportToPDF()">
+                            <img  src="assets/images/PDF-blanco.png" width="40px">
                         </button>
-                        <button type="button" mat-button matTooltip="Descargar WORD" (click)="exportToDocx()">
+                        <div *ngIf="isLoadingDocx" class="spinner-container">
+                            <mat-spinner color="accent"></mat-spinner>
+                          </div>
+                        <button *ngIf="!isLoadingDocx" type="button" mat-button matTooltip="Descargar WORD" (click)="exportToDocx()">
                             <img src="assets/images/Impresion.png" width="40px">
                         </button>
                     </div>

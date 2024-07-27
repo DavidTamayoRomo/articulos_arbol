@@ -30,7 +30,7 @@ import { HasRoleDirective } from '../../../directives/has-role.directive';
 import { KeycloakAuthService } from '../../../auth/services/keycloak-auth.service';
 import { TextFromObjectPipe } from "../../../text-from-object.pipe";
 import { Validators } from 'ngx-editor';
-
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HighlightPipe } from '../../../highlight.pipe';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DataService } from '../services/data.service';
@@ -74,7 +74,7 @@ interface Node {
     MatCardModule, MatMenuModule, MatButtonModule, RouterLink, MatTableModule, NgIf, MatCheckboxModule,
     MatTooltipModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, MatNativeDateModule, MatPaginatorModule,
     RouterLinkActive, MatProgressBarModule, EditorsComponent, MatDialogModule, TwNestedNodesComponent, ReactiveFormsModule, MatTreeModule, HasRoleDirective, RouterModule,
-    TextFromObjectPipe, HighlightPipe, MatChipsModule, EditorQuillComponent
+    TextFromObjectPipe, HighlightPipe, MatChipsModule, EditorQuillComponent,  MatProgressSpinnerModule
   ]
 })
 export class ListaArticulosComponent {
@@ -168,7 +168,8 @@ export class ListaArticulosComponent {
   form!: FormGroup;
 
   content: any;
-
+  isLoadingPDF = false;
+  isLoadingDocx = false;
   classApplied1: boolean = false;
 
   constructor(
@@ -375,20 +376,36 @@ export class ListaArticulosComponent {
 
 
 
-  exportToPDF() {
-    let jsonData = this.dataSource.data;
+  
 
-    const docDefinition = this.buildDocument(jsonData);
-    pdfMake.createPdf(docDefinition).download("CódigoMunicipal.pdf");
-
-    //this.exportToPDFImport(jsonData);
-  }
-
-  exportToPDFImport(jsonData: any) {
+ /*  exportToPDFImport(jsonData: any) {
     let docDefinition = this.jsonToDocDefinition(jsonData);
     pdfMake.createPdf(docDefinition).download("CódigoMunicipal.pdf");
+  } */
+
+
+  exportToPDF() {
+    this.isLoadingPDF = true;
+    let jsonData = this.dataSource.data; 
+    const docDefinition = this.buildDocument(jsonData);
+    
+    this.generatePDF(docDefinition)
+      .then(() => {
+        this.isLoadingPDF = false;
+      })
+      .catch((error) => {
+        console.error('Error generating PDF', error);
+        this.isLoadingPDF = false;
+      });
   }
 
+  generatePDF(docDefinition: any): Promise<void> {
+    return new Promise((resolve, reject) => {
+      pdfMake.createPdf(docDefinition).download("CódigoMunicipal.pdf", () => {
+        resolve();
+      });
+    });
+  }
 
 
   jsonToDocDefinition(jsonData: any) {
@@ -542,6 +559,8 @@ export class ListaArticulosComponent {
   }
 
   async exportToDocx() {
+    this.isLoadingDocx = true;
+    
     const docDefinition = this.buildDocument(this.dataSource.data);
     console.log(docDefinition);
     const imageData: any = await this.getImageData();
@@ -579,10 +598,14 @@ export class ListaArticulosComponent {
       }],
     });
 
-    Packer.toBlob(doc).then(blob => {
-      saveAs(blob, 'CodigoMunicipal.docx');
-    });
+  
 
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, 'CodigoMunicipal.docx');
+    if (blob) {
+      this.isLoadingDocx = false;
+    }
+    
   }
 
 
