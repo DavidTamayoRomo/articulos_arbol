@@ -170,6 +170,7 @@ export class ListaArticulosComponent {
   content: any;
   isLoadingPDF = false;
   isLoadingDocx = false;
+  isLoadingCSV = false;
   classApplied1: boolean = false;
 
   constructor(
@@ -264,20 +265,15 @@ export class ListaArticulosComponent {
       return filteredItem;
     });
   }
-  exportToCSV() {
-
+  async exportToCSV() {
+    this.isLoadingCSV = true;
     const fieldsToExport = ['name', 'content', 'state'];
-    this.articuloService.getArticulosByState(['activo']).subscribe({
-      next: (data: any) => {
-        const filteredData = this.filterFields(this.buildCompleteList(data), fieldsToExport);
-        this.exportToExcel(filteredData, 'Codigo_Municipal');
-      },
-      error: (err) => { console.log("Error al cargar los Artículos") }
-    });
-
+    const filteredData = this.filterFields(this.dataSource.data, fieldsToExport);
+    await this.exportToExcel(filteredData, 'Codigo_Municipal');
+    this.isLoadingCSV = false;
   }
 
-  exportToExcel(data: any[], fileName: string): void {
+  async exportToExcel(data: any[], fileName: string): Promise<void> {
     // Create a new worksheet
     const worksheet: XLSX.WorkSheet = {};
     const headers = ['Nombre', 'Contenido', 'Estado'];
@@ -326,7 +322,7 @@ export class ListaArticulosComponent {
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
 
     // Save the Excel file
-    this.saveAsExcelFile(excelBuffer, fileName);
+    await this.saveAsExcelFile(excelBuffer, fileName);
   }
 
   private saveAsExcelFile(buffer: any, fileName: string): void {

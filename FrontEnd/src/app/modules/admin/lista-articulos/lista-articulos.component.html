@@ -40,7 +40,10 @@
                     </button>
                     
                     <div class="button-container">
-                        <button type="button" mat-button matTooltip="Descargar Excel" (click)="exportToCSV()">
+                        <div *ngIf="isLoadingCSV" class="spinner-container">
+                            <mat-spinner color="accent"></mat-spinner>
+                        </div>
+                        <button *ngIf="!isLoadingCSV" type="button" mat-button matTooltip="Descargar Excel" (click)="exportToCSV()">
                             <img src="assets/images/EXCEL.png" width="40px">
                         </button>
                         <div *ngIf="isLoadingPDF" class="spinner-container">
