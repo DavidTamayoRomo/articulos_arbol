@@ -79,6 +79,9 @@
                             </mat-form-field>
                         </div>
                         <div class="col-md-12" *ngIf="showEditor">
+                            <mat-label>
+                                Contenido *
+                            </mat-label>
                             <app-editor-quill (contentChanged)="handleEditorContentChanged($event)" [message]="parentMessage"></app-editor-quill>
                         </div>
                         <div class="col-md-12">
