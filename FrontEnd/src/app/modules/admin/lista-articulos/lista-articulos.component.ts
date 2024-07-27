@@ -74,7 +74,7 @@ interface Node {
     MatCardModule, MatMenuModule, MatButtonModule, RouterLink, MatTableModule, NgIf, MatCheckboxModule,
     MatTooltipModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatDatepickerModule, MatNativeDateModule, MatPaginatorModule,
     RouterLinkActive, MatProgressBarModule, EditorsComponent, MatDialogModule, TwNestedNodesComponent, ReactiveFormsModule, MatTreeModule, HasRoleDirective, RouterModule,
-    TextFromObjectPipe, HighlightPipe, MatChipsModule, EditorQuillComponent,  MatProgressSpinnerModule
+    TextFromObjectPipe, HighlightPipe, MatChipsModule, EditorQuillComponent, MatProgressSpinnerModule
   ]
 })
 export class ListaArticulosComponent {
@@ -117,7 +117,7 @@ export class ListaArticulosComponent {
     this.classApplied = !this.classApplied;
   }
   toggleClass1() {
-    
+
     this.classApplied1 = !this.classApplied1;
     if (!this.classApplied1) {
       this.limpiarCampos();
@@ -372,19 +372,19 @@ export class ListaArticulosComponent {
 
 
 
-  
 
- /*  exportToPDFImport(jsonData: any) {
-    let docDefinition = this.jsonToDocDefinition(jsonData);
-    pdfMake.createPdf(docDefinition).download("CódigoMunicipal.pdf");
-  } */
+
+  /*  exportToPDFImport(jsonData: any) {
+     let docDefinition = this.jsonToDocDefinition(jsonData);
+     pdfMake.createPdf(docDefinition).download("CódigoMunicipal.pdf");
+   } */
 
 
   exportToPDF() {
     this.isLoadingPDF = true;
-    let jsonData = this.dataSource.data; 
+    let jsonData = this.dataSource.data;
     const docDefinition = this.buildDocument(jsonData);
-    
+
     this.generatePDF(docDefinition)
       .then(() => {
         this.isLoadingPDF = false;
@@ -556,7 +556,7 @@ export class ListaArticulosComponent {
 
   async exportToDocx() {
     this.isLoadingDocx = true;
-    
+
     const docDefinition = this.buildDocument(this.dataSource.data);
     console.log(docDefinition);
     const imageData: any = await this.getImageData();
@@ -594,14 +594,14 @@ export class ListaArticulosComponent {
       }],
     });
 
-  
+
 
     const blob = await Packer.toBlob(doc);
     saveAs(blob, 'CodigoMunicipal.docx');
     if (blob) {
       this.isLoadingDocx = false;
     }
-    
+
   }
 
 
@@ -875,7 +875,9 @@ export class ListaArticulosComponent {
       fecha_creacion: this.contenidoSeleccionado.fecha_creacion,
       usuario_creacion: this.contenidoSeleccionado.usuario_creacion
     }
-    if (this.form.valid && this.content) {
+    console.log(this.form.value.titulo);
+    console.log(this.content);
+    if (this.form.value.titulo!= '' && this.content) {
       //actualizar
       if (this.contenidoSeleccionado.id_padre != null) {
         this.articuloService.update(objeto, this.contenidoSeleccionado.id_padre, this.contenidoSeleccionado.id).subscribe({
@@ -950,55 +952,56 @@ export class ListaArticulosComponent {
       usuario_creacion: element.usuario_creacion
     }
     console.log(objeto);
-    /* if (this.form.valid && this.content) { */
-    //actualizar
-    if (element.id_padre != null) {
-      this.articuloService.update(objeto, element.id_padre, element.id).subscribe({
-        next: ((resp: any) => {
-          console.log(resp);
-          this._snackBar.open('El registro seleccionado se actualizó con éxito', 'Cerrar', {
-            horizontalPosition: 'right',
-            verticalPosition: 'top',
-          });
-          this.articuloService.getArticulosByState(this.states).subscribe({
-            next: (data: any) => {
-              console.log(data);
-              console.log(this.buildCompleteList(data));//TODO: Verificar xq no se actualiza
-              this.dataSource.data = this.buildCompleteList(data);
-              this.dataSource.paginator = this.paginator;
-              this.sendMessage();
-            },
-            error: (err) => { console.log("Error al cargar los Artículos") }
-          });
+    if (this.form.valid && this.content) {
+      //actualizar
+      if (element.id_padre != null) {
+        this.articuloService.update(objeto, element.id_padre, element.id).subscribe({
+          next: ((resp: any) => {
+            console.log(resp);
+            this._snackBar.open('El registro seleccionado se actualizó con éxito', 'Cerrar', {
+              horizontalPosition: 'right',
+              verticalPosition: 'top',
+            });
+            this.articuloService.getArticulosByState(this.states).subscribe({
+              next: (data: any) => {
+                console.log(data);
+                console.log(this.buildCompleteList(data));//TODO: Verificar xq no se actualiza
+                this.dataSource.data = this.buildCompleteList(data);
+                this.dataSource.paginator = this.paginator;
+                this.sendMessage();
+              },
+              error: (err) => { console.log("Error al cargar los Artículos") }
+            });
 
 
-        }),
-        error: ((err: any) => {
-          console.log(err);
+          }),
+          error: ((err: any) => {
+            console.log(err);
+          })
         })
-      })
-    } else {
-      this.articuloService.update(objeto, element.id, element.id).subscribe({
-        next: ((resp: any) => {
-          this.articuloService.getArticulosByState(this.states).subscribe({
-            next: (data: any) => {
-              this._snackBar.open('El registro seleccionado se actualizó con éxito', 'Cerrar', {
-                horizontalPosition: 'right',
-                verticalPosition: 'top',
-              });
-              console.log(data);
-              console.log(this.buildCompleteList(data));//TODO: Verificar xq no se actualiza
-              this.dataSource.data = this.buildCompleteList(data);
-              this.dataSource.paginator = this.paginator;
-              this.sendMessage();
-            },
-            error: (err) => { console.log("Error al cargar los Artículos") }
-          });
-        }),
-        error: ((err: any) => {
-          console.log(err);
+      } else {
+        this.articuloService.update(objeto, element.id, element.id).subscribe({
+          next: ((resp: any) => {
+            this.articuloService.getArticulosByState(this.states).subscribe({
+              next: (data: any) => {
+                this._snackBar.open('El registro seleccionado se actualizó con éxito', 'Cerrar', {
+                  horizontalPosition: 'right',
+                  verticalPosition: 'top',
+                });
+                console.log(data);
+                console.log(this.buildCompleteList(data));//TODO: Verificar xq no se actualiza
+                this.dataSource.data = this.buildCompleteList(data);
+                this.dataSource.paginator = this.paginator;
+                this.sendMessage();
+              },
+              error: (err) => { console.log("Error al cargar los Artículos") }
+            });
+          }),
+          error: ((err: any) => {
+            console.log(err);
+          })
         })
-      })
+      }
     }
   }
 

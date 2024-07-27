@@ -130,7 +130,7 @@ export class TwNestedNodesComponent {
                 setTimeout(() => {
                     this.isLoading = false;
                 }, 8000);
-                
+
             },
             error: (err) => {
                 console.log("Error al cargar los Artículos");
@@ -217,26 +217,26 @@ export class TwNestedNodesComponent {
     }
 
     agregarPadre() {
-        let datosKeycloak: any = this.keycloakauthService.getLoggedUser();
-        let usuarioCreacion: any = datosKeycloak.preferred_username;
 
-        const pipeTextFromObject = new TextFromObjectPipe();
-        const nuevoHijo: Node = {
-            name: this.form.controls['titulo'].value,
-            content: this.content,
-            state: this.form.controls['estado'].value,
-            children: [],
-            referencia: this.form.controls['referencia'].value,
-            content_transform: pipeTextFromObject.transform(this.content),
-            isVisible: false,
-            isExpanded: false,
-            fecha_creacion: new Date(),
-            usuario_creacion: usuarioCreacion
-        };
-        this.actualizarDatos();
-        this.dataChange.next(this.dataSource.data);
+        if (this.content && this.form.value.titulo != '' && this.form.value.estado != null) {
+            let datosKeycloak: any = this.keycloakauthService.getLoggedUser();
+            let usuarioCreacion: any = datosKeycloak.preferred_username;
 
-        if (this.content && this.form.valid) {
+            const pipeTextFromObject = new TextFromObjectPipe();
+            const nuevoHijo: Node = {
+                name: this.form.controls['titulo'].value,
+                content: this.content,
+                state: this.form.controls['estado'].value,
+                children: [],
+                referencia: this.form.controls['referencia'].value,
+                content_transform: pipeTextFromObject.transform(this.content),
+                isVisible: false,
+                isExpanded: false,
+                fecha_creacion: new Date(),
+                usuario_creacion: usuarioCreacion
+            };
+            this.actualizarDatos();
+            this.dataChange.next(this.dataSource.data);
             this.articuloService.createArticulo(nuevoHijo).subscribe({
                 next: (resp: any) => {
                     this._snackBar.open('El registro se guardó con éxito', 'Cerrar', {
@@ -260,29 +260,30 @@ export class TwNestedNodesComponent {
     }
 
     agregarHijo(node: Node) {
-        let datosKeycloak: any = this.keycloakauthService.getLoggedUser();
-        let usuarioCreacion: any = datosKeycloak.preferred_username;
-        const pipeTextFromObject = new TextFromObjectPipe();
-        const nuevoHijo: Node = {
-            name: this.form.controls['titulo'].value,
-            content: this.content,
-            content_transform: pipeTextFromObject.transform(this.content),
-            state: this.form.controls['estado'].value,
-            children: [],
-            referencia: this.form.controls['referencia'].value,
-            isVisible: false,
-            isExpanded: false,
-            fecha_creacion: new Date(),
-            usuario_creacion: usuarioCreacion
-        };
-        if (!node.children) {
-            node.children = [];
-        }
-        node.children.push(nuevoHijo);
-        this.actualizarDatos();
-        this.dataChange.next(this.dataSource.data);
 
-        if (this.content && this.form.valid) {
+
+        if (this.content && this.form.value.titulo != '' && this.form.value.estado != null) {
+            let datosKeycloak: any = this.keycloakauthService.getLoggedUser();
+            let usuarioCreacion: any = datosKeycloak.preferred_username;
+            const pipeTextFromObject = new TextFromObjectPipe();
+            const nuevoHijo: Node = {
+                name: this.form.controls['titulo'].value,
+                content: this.content,
+                content_transform: pipeTextFromObject.transform(this.content),
+                state: this.form.controls['estado'].value,
+                children: [],
+                referencia: this.form.controls['referencia'].value,
+                isVisible: false,
+                isExpanded: false,
+                fecha_creacion: new Date(),
+                usuario_creacion: usuarioCreacion
+            };
+            if (!node.children) {
+                node.children = [];
+            }
+            node.children.push(nuevoHijo);
+            this.actualizarDatos();
+            this.dataChange.next(this.dataSource.data);
             this.classApplied = !this.classApplied;
             if (this.datoSeleccionadoGuardar?.id_padre == null) {
                 this.articuloService.createHijos(nuevoHijo, this.datoSeleccionadoGuardar?.id, this.datoSeleccionadoGuardar?.id).subscribe({
