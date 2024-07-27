@@ -2,6 +2,8 @@ package com.mdmq.codigomunicipal.service;
 
 import com.mdmq.codigomunicipal.models.ArticuloNode;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.FileInputStream;
@@ -75,76 +77,83 @@ public class ArticuloNodeImportService {
     }
 
     public String getCellAsFormattedString(Cell cell, Workbook workbook, boolean formatContentColumn) {
-        if (cell == null) return ""; // Si la celda es null, regresa una cadena vacía.
-    
-        CellStyle style = cell.getCellStyle();
-        Font font = workbook.getFontAt(style.getFontIndex());
-    
-        StringBuilder cellValue = new StringBuilder();
-    
-        // Capturar el valor de la celda
-        switch (cell.getCellType()) {
-            case STRING:
+    if (cell == null) return ""; // Si la celda es null, regresa una cadena vacía.
+
+    StringBuilder cellValue = new StringBuilder();
+
+    // Capturar el valor de la celda
+    switch (cell.getCellType()) {
+        case STRING:
+            if (formatContentColumn && cell.getRichStringCellValue() instanceof XSSFRichTextString) {
+                XSSFRichTextString richText = (XSSFRichTextString) cell.getRichStringCellValue();
+                for (int i = 0; i < richText.length(); i++) {
+                    XSSFFont font = richText.getFontOfFormattingRun(i);
+                    String text = richText.getString().substring(i, i + 1);
+                    if (font != null && font.getBold()) {
+                        text = "<strong>" + text + "</strong>";
+                    }
+                    if (font != null && font.getItalic()) {
+                        text = "<i>" + text + "</i>";
+                    }
+                    if (font != null && font.getUnderline() != Font.U_NONE) {
+                        text = "<u>" + text + "</u>";
+                    }
+                    cellValue.append(text);
+                }
+            } else {
                 cellValue.append(cell.getStringCellValue());
+            }
+            break;
+        case NUMERIC:
+            double numericValue = cell.getNumericCellValue();
+            cellValue.append((numericValue == Math.floor(numericValue)) && !Double.isInfinite(numericValue)
+                            ? String.format("%.0f", numericValue)
+                            : String.valueOf(numericValue));
+            break;
+        case BOOLEAN:
+            cellValue.append(cell.getBooleanCellValue());
+            break;
+        case FORMULA:
+            cellValue.append(handleFormula(cell, workbook));
+            break;
+        case BLANK:
+            return "";
+        default:
+            return "";
+    }
+
+    // Mantener saltos de línea
+    String result = cellValue.toString().replace("\n", "<br>");
+
+    // Aplicar alineación si es necesario
+    if (formatContentColumn) {
+        CellStyle style = cell.getCellStyle();
+        switch (style.getAlignment()) {
+            case CENTER:
+                result = "<p class='ql-align-center'>" + result + "</p>";
                 break;
-            case NUMERIC:
-                double numericValue = cell.getNumericCellValue();
-                cellValue.append((numericValue == Math.floor(numericValue)) && !Double.isInfinite(numericValue)
-                                ? String.format("%.0f", numericValue)
-                                : String.valueOf(numericValue));
+            case LEFT:
+                result = "<p class='ql-align-left'>" + result + "</p>";
                 break;
-            case BOOLEAN:
-                cellValue.append(cell.getBooleanCellValue());
+            case RIGHT:
+                result = "<p class='ql-align-right'>" + result + "</p>";
                 break;
-            case FORMULA:
-                cellValue.append(handleFormula(cell, workbook));
+            case JUSTIFY:
+                result = "<p class='ql-align-justify'>" + result + "</p>";
                 break;
-            case BLANK:
-                return "";
             default:
-                return "";
+                break;
         }
 
-    
-        if (formatContentColumn) {
-            // Aplicar estilos de fuente
-            if (font.getBold()) {
-                cellValue.insert(0, "<strong>").append("</strong>");
-            }
-            if (font.getItalic()) {
-                cellValue.insert(0, "<i>").append("</i>");
-            }
-            if (font.getUnderline() != Font.U_NONE) {
-                cellValue.insert(0, "<u>").append("</u>");
-            }
-    
-            // Aplicar alineación
-            switch (style.getAlignment()) {
-                case CENTER:
-                    cellValue.insert(0, "<p class='ql-align-center'>").append("</p>");
-                    break;
-                case LEFT:
-                    cellValue.insert(0, "<p class='ql-align-left'>").append("</p>");
-                    break;
-                case RIGHT:
-                    cellValue.insert(0, "<p class='ql-align-right'>").append("</p>");
-                    break;
-                case JUSTIFY:
-                    cellValue.insert(0, "<p class='ql-align-justify'>").append("</p>");
-                    break;
-                default:
-                    break;
-            }
-    
-            // Aplicar indentación
-            if (style.getIndention() > 0) {
-                cellValue.insert(0, "<p class='ql-indent-" + style.getIndention() + "'>").append("</p>");
-            }
+        // Aplicar indentación
+        if (style.getIndention() > 0) {
+            result = "<p class='ql-indent-" + style.getIndention() + "'>" + result + "</p>";
         }
-    
-        return cellValue.toString().replace("\n", "<br>"); // Mantener saltos de línea
     }
-    
+
+    return result;
+}
+
     private String handleFormula(Cell cell, Workbook workbook) {
         switch (cell.getCachedFormulaResultType()) {
             case STRING:
