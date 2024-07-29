@@ -335,63 +335,63 @@ export class ListaArticulosComponent {
 
   private buildDocument(htmlContents: any): any {
     const pdfContent = htmlContents.map((html: any) => htmlToPdfmake(html.content, {
-        defaultStyles: {
-            p: {
-                margin: [0, 0, 0, 10],
-            },
-            ol: {
-                margin: [0, 0, 0, 10],
-            },
-            ul: {
-                margin: [0, 0, 0, 10],
-            },
-            li: {
-                margin: [0, 0, 0, 10],
-            },
-        }
+      defaultStyles: {
+        p: {
+          margin: [0, 0, 0, 10],
+        },
+        ol: {
+          margin: [0, 0, 0, 10],
+        },
+        ul: {
+          margin: [0, 0, 0, 10],
+        },
+        li: {
+          margin: [0, 0, 0, 10],
+        },
+      }
     }));
 
     const header = this.buildHeader();
 
     const styles = {
-        header: { fontSize: 18, bold: true },
-        body: { fontSize: 12 },
-        'ql-align-right': { alignment: 'right' },
-        'ql-align-center': { alignment: 'center' },
-        'ql-align-justify': { alignment: 'justify' },
-        'ql-indent-1': {
-            margin: [30, 0, 0, 10],
-        },
-        'ql-indent-2': {
-            margin: [60, 0, 0, 10],
-        },
-        'ql-indent-3': {
-            margin: [90, 0, 0, 10],
-        },
-        'ql-indent-4': {
-            margin: [120, 0, 0, 10],
-        },
+      header: { fontSize: 18, bold: true },
+      body: { fontSize: 12 },
+      'ql-align-right': { alignment: 'right' },
+      'ql-align-center': { alignment: 'center' },
+      'ql-align-justify': { alignment: 'justify' },
+      'ql-indent-1': {
+        margin: [30, 0, 0, 10],
+      },
+      'ql-indent-2': {
+        margin: [60, 0, 0, 10],
+      },
+      'ql-indent-3': {
+        margin: [90, 0, 0, 10],
+      },
+      'ql-indent-4': {
+        margin: [120, 0, 0, 10],
+      },
     };
 
     const modifiedPdfContent = pdfContent.flat().map((content: any) => {
-        if (content.style) {
-            content.style.forEach((style: string) => {
-                const styleDefinition = styles[style as keyof typeof styles];
-                if (styleDefinition && 'margin' in styleDefinition) {
-                    content.margin = styleDefinition.margin;
-                }
-            });
-        }
-        return content;
+      if (content.style) {
+        content.style.forEach((style: string) => {
+          const styleDefinition = styles[style as keyof typeof styles];
+          if (styleDefinition && 'margin' in styleDefinition) {
+            content.margin = styleDefinition.margin;
+          }
+        });
+      }
+      return content;
     });
 
     return {
-        header: header,
-        content: modifiedPdfContent,
-        styles: styles,
-        pageMargins: [40, 150, 40, 40]
+      header: header,
+      content: modifiedPdfContent,
+      styles: styles,
+      pageMargins: [40, 150, 40, 40]
     };
-}
+  }
 
 
 
@@ -659,7 +659,6 @@ export class ListaArticulosComponent {
     this.isLoadingDocx = true;
 
     const docDefinition = this.buildDocument(this.dataSource.data);
-    console.log(docDefinition);
     const imageData: any = await this.getImageData();
     const doc = new Document({
       sections: [{
@@ -695,16 +694,12 @@ export class ListaArticulosComponent {
       }],
     });
 
-
-
     const blob = await Packer.toBlob(doc);
     saveAs(blob, 'CodigoMunicipal.docx');
     if (blob) {
       this.isLoadingDocx = false;
     }
-
   }
-
 
 
   async getImageData() {
@@ -739,13 +734,10 @@ export class ListaArticulosComponent {
   }
 
   createParagraphsAndTablesFromData(data: any[]): (Paragraph | Table)[] {
-    console.log(data);
     return data.map(item => {
-      console.log(item);
       if (item?.table) {
         return this.createTable(item.table);
       } else if (item?.ol) {
-        console.log(this.createList(item?.ol));
         return this.createList(item?.ol);
       } else {
         return this.createParagraph(item);
@@ -755,12 +747,37 @@ export class ListaArticulosComponent {
 
   createParagraph(item: any): Paragraph {
     const marginAfter = item.margin && item.margin.length > 3 ? item.margin[3] * 20 : 0;
+
+    let indentLeft = 0;
+    if (item.style && Array.isArray(item.style)) {
+      item.style.forEach((style: string) => {
+        switch (style) {
+          case 'ql-indent-1':
+            indentLeft = 30 * 20; // 30 puntos * 20 = 600 twips
+            break;
+          case 'ql-indent-2':
+            indentLeft = 60 * 20;
+            break;
+          case 'ql-indent-3':
+            indentLeft = 90 * 20;
+            break;
+          case 'ql-indent-4':
+            indentLeft = 120 * 20;
+            break;
+        }
+      });
+    }
+
     const paragraph: any = new Paragraph({
       alignment: this.getAlignment(item.style),
       spacing: {
         after: marginAfter,
+      },
+      indent: {
+        left: indentLeft,
       }
     });
+
     if (Array.isArray(item?.text)) {
       item?.text?.forEach((part: any) => {
         const textRun = new TextRun({
@@ -794,9 +811,7 @@ export class ListaArticulosComponent {
   }
 
   createTable(tableData: any): Table {
-    console.log(tableData);
     const rows = tableData.body.map((row: any) => {
-      console.log(row);
       const cells = row.map((cell: any) => new TableCell({
         children: [new Paragraph({
           children: [new TextRun(cell.text)]
