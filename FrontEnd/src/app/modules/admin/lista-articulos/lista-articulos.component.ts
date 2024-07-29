@@ -334,21 +334,122 @@ export class ListaArticulosComponent {
 
 
   private buildDocument(htmlContents: any): any {
-    const pdfContent = htmlContents.map((html: any) => htmlToPdfmake(html.content));
+    const pdfContent = htmlContents.map((html: any) => htmlToPdfmake(html.content, {
+        defaultStyles: {
+            p: {
+                margin: [0, 0, 0, 10],
+            },
+            ol: {
+                margin: [0, 0, 0, 10],
+            },
+            ul: {
+                margin: [0, 0, 0, 10],
+            },
+            li: {
+                margin: [0, 0, 0, 10],
+            },
+        }
+    }));
+
     const header = this.buildHeader();
-    return {
-      header: header,
-      content: pdfContent.flat(),
-      styles: {
+
+    const styles = {
         header: { fontSize: 18, bold: true },
         body: { fontSize: 12 },
         'ql-align-right': { alignment: 'right' },
         'ql-align-center': { alignment: 'center' },
-        'ql-align-justify': { alignment: 'justify' }
-      },
-      pageMargins: [40, 150, 40, 40]
+        'ql-align-justify': { alignment: 'justify' },
+        'ql-indent-1': {
+            margin: [30, 0, 0, 10],
+        },
+        'ql-indent-2': {
+            margin: [60, 0, 0, 10],
+        },
+        'ql-indent-3': {
+            margin: [90, 0, 0, 10],
+        },
+        'ql-indent-4': {
+            margin: [120, 0, 0, 10],
+        },
     };
+
+    const modifiedPdfContent = pdfContent.flat().map((content: any) => {
+        if (content.style) {
+            content.style.forEach((style: string) => {
+                const styleDefinition = styles[style as keyof typeof styles];
+                if (styleDefinition && 'margin' in styleDefinition) {
+                    content.margin = styleDefinition.margin;
+                }
+            });
+        }
+        return content;
+    });
+
+    return {
+        header: header,
+        content: modifiedPdfContent,
+        styles: styles,
+        pageMargins: [40, 150, 40, 40]
+    };
+}
+
+
+
+
+  private processHtmlContent(htmlContent: string) {
+    const parsedContent = htmlToPdfmake(htmlContent);
+    return this.applyStylesToContent(parsedContent);
   }
+
+  private applyStylesToContent(content: any): any {
+    if (Array.isArray(content)) {
+      return content.map(item => this.applyStylesToContent(item));
+    } else if (typeof content === 'object') {
+      if (content.style) {
+        content.style = this.convertStyles(content.style);
+      }
+      if (content.text) {
+        content.text = this.applyStylesToContent(content.text);
+      }
+      if (content.ul) {
+        content.ul = this.applyStylesToContent(content.ul);
+      }
+      if (content.ol) {
+        content.ol = this.applyStylesToContent(content.ol);
+      }
+      return content;
+    } else {
+      return content;
+    }
+  }
+
+  private convertStyles(styles: any): any {
+    if (typeof styles === 'string') {
+      return styles.split(' ').map(style => {
+        switch (style) {
+          case 'ql-align-right':
+            return 'ql-align-right';
+          case 'ql-align-center':
+            return 'ql-align-center';
+          case 'ql-align-justify':
+            return 'ql-align-justify';
+          case 'ql-indent-1':
+            return 'ql-indent-1';
+          case 'ql-indent-2':
+            return 'ql-indent-2';
+          case 'ql-indent-3':
+            return 'ql-indent-3';
+          case 'ql-indent-4':
+            return 'ql-indent-4';
+          default:
+            return style;
+        }
+      });
+    } else {
+      return styles;
+    }
+  }
+
   private buildHeader() {
     return {
       stack: [
@@ -877,7 +978,7 @@ export class ListaArticulosComponent {
     }
     console.log(this.form.value.titulo);
     console.log(this.content);
-    if (this.form.value.titulo!= '' && this.content) {
+    if (this.form.value.titulo != '' && this.content) {
       //actualizar
       if (this.contenidoSeleccionado.id_padre != null) {
         this.articuloService.update(objeto, this.contenidoSeleccionado.id_padre, this.contenidoSeleccionado.id).subscribe({

@@ -153,6 +153,25 @@ td {
 .ql-indent-1 {
     padding-left: 30px;
 }
+.ql-indent-2 {
+    padding-left: 60px;
+}
+.ql-indent-3 {
+    padding-left: 90px;
+}
+.ql-indent-4 {
+    padding-left: 120px;
+}
+
+/* Estilo para remover números o letras de las listas ordenadas */
+.custom-list {
+    list-style-type: none; /* Remueve números o letras */
+    padding-left: 1.5em; /* Ajusta la sangría según sea necesario */
+}
+
+.custom-list .custom-list {
+    padding-left: 1.5em; /* Ajusta la sangría para sub-listas */
+}
 
 // Utilities CSS
 @import "./utilities";
