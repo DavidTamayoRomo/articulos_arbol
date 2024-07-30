@@ -35,7 +35,10 @@ export class EditorQuillComponent {
       ['clean'],                                         // remove formatting button
 
       ['link', 'image']
-    ]
+    ],/* 
+    clipboard: {
+      matchVisual: false // Ensure no visual matching on clipboard operations
+    } */
   };
 
   ngOnChanges(changes: SimpleChanges) {

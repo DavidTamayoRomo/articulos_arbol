@@ -76,7 +76,7 @@
                                 <td mat-cell *matCellDef="let element">
                                     <span
                                         [innerHTML]="element.content | highlight:input.value"></span><br><br>
-                                    <div *ngIf="element?.referencia">Nota: {{element?.referencia}}</div>
+                                    <div *ngIf="element?.referencia">{{element?.referencia}}</div>
                                 </td>
                             </ng-container>
 
