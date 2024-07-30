@@ -7,6 +7,8 @@ import { CustomizerSettingsService } from '../../../../common/customizer-setting
 import { CommonModule } from '@angular/common';
 import { HasRoleDirective } from '../../../../directives/has-role.directive';
 import { HighlightPipe } from '../../../../highlight.pipe';
+import { KeycloakService } from 'keycloak-angular';
+import { KeycloakAuthService } from '../../../../auth/services/keycloak-auth.service';
 
 @Component({
     selector: 'app-advance',
@@ -24,7 +26,8 @@ export class AdvanceComponent {
 
     constructor(
         public themeService: CustomizerSettingsService,
-        private router:Router
+        private router:Router,
+        private keycloakService:KeycloakAuthService
     ) {
         this.themeService.isToggled$.subscribe(isToggled => {
             this.isToggled = isToggled;
@@ -37,8 +40,13 @@ export class AdvanceComponent {
     }
 
     regresar(){
-        window.history.back();
-        this.router.navigate(['/admin/lista-articulos'] );
+        
+           if(this.keycloakService.getLoggedUser()){
+            this.router.navigate(['/admin/lista-articulos'] );
+           }else{
+            this.router.navigate(['/lista-articulos'] );
+           }
+        
     }
 
 }
