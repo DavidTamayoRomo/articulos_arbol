@@ -151,6 +151,7 @@
             </mat-card-header>
             <mat-card-content>
                 <span [innerHTML]="contenidoSeleccionado?.content"></span><br><br>
+                <div *ngIf="contenidoSeleccionado?.referencia">{{contenidoSeleccionado?.referencia}}</div>
             </mat-card-content>
             <mat-card-footer>
                 <div class="row">
