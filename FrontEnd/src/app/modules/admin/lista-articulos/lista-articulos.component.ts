@@ -335,63 +335,62 @@ export class ListaArticulosComponent {
 
   private buildDocument(htmlContents: any): any {
     const pdfContent = htmlContents.map((html: any) => htmlToPdfmake(html.content, {
-      defaultStyles: {
-        p: {
-          margin: [0, 0, 0, 10],
-        },
-        ol: {
-          margin: [0, 0, 0, 10],
-        },
-        ul: {
-          margin: [0, 0, 0, 10],
-        },
-        li: {
-          margin: [0, 0, 0, 10],
-        },
-      }
+        defaultStyles: {
+            p: {
+                margin: [0, 0, 0, 10],
+            },
+            ol: {
+                margin: [0, 0, 0, 10],
+            },
+            ul: {
+                margin: [0, 0, 0, 10],
+            },
+            li: {
+                margin: [0, 0, 0, 10],
+            },
+        }
     }));
 
     const header = this.buildHeader();
 
     const styles = {
-      header: { fontSize: 18, bold: true },
-      body: { fontSize: 12 },
-      'ql-align-right': { alignment: 'right' },
-      'ql-align-center': { alignment: 'center' },
-      'ql-align-justify': { alignment: 'justify' },
-      'ql-indent-1': {
-        margin: [30, 0, 0, 10],
-      },
-      'ql-indent-2': {
-        margin: [60, 0, 0, 10],
-      },
-      'ql-indent-3': {
-        margin: [90, 0, 0, 10],
-      },
-      'ql-indent-4': {
-        margin: [120, 0, 0, 10],
-      },
+        header: { fontSize: 18, bold: true },
+        body: { fontSize: 12 },
+        'ql-align-right': { alignment: 'right' },
+        'ql-align-center': { alignment: 'center' },
+        'ql-align-justify': { alignment: 'justify' },
+        'ql-indent-1': {
+            margin: [30, 0, 0, 10],
+        },
+        'ql-indent-2': {
+            margin: [60, 0, 0, 10],
+        },
+        'ql-indent-3': {
+            margin: [90, 0, 0, 10],
+        },
+        'ql-indent-4': {
+            margin: [120, 0, 0, 10],
+        },
     };
-
+console.log(pdfContent.flat());
     const modifiedPdfContent = pdfContent.flat().map((content: any) => {
-      if (content.style) {
-        content.style.forEach((style: string) => {
-          const styleDefinition = styles[style as keyof typeof styles];
-          if (styleDefinition && 'margin' in styleDefinition) {
-            content.margin = styleDefinition.margin;
-          }
-        });
-      }
-      return content;
+        if (content.style) {
+            content.style.forEach((style: string) => {
+                const styleDefinition = styles[style as keyof typeof styles];
+                if (styleDefinition && 'margin' in styleDefinition) {
+                    content.margin = styleDefinition.margin;
+                }
+            });
+        }
+        return content;
     });
-
     return {
-      header: header,
-      content: modifiedPdfContent,
-      styles: styles,
-      pageMargins: [40, 150, 40, 40]
+        header: header,
+        content: modifiedPdfContent,
+        styles: styles,
+        pageMargins: [40, 150, 40, 40],
     };
-  }
+}
 
 
 
@@ -485,7 +484,7 @@ export class ListaArticulosComponent {
     this.isLoadingPDF = true;
     let jsonData = this.dataSource.data;
     const docDefinition = this.buildDocument(jsonData);
-
+    console.log(docDefinition);
     this.generatePDF(docDefinition)
       .then(() => {
         this.isLoadingPDF = false;
@@ -655,10 +654,14 @@ export class ListaArticulosComponent {
     return this.processContent(item.content);
   }
 
+
+
   async exportToDocx() {
     this.isLoadingDocx = true;
-
-    const docDefinition = this.buildDocument(this.dataSource.data);
+    let jsonData = this.dataSource.data;
+    console.log(jsonData);
+    const docDefinition = this.buildDocument(jsonData);
+    console.log(docDefinition);
     const imageData: any = await this.getImageData();
     const doc = new Document({
       sections: [{
@@ -718,7 +721,6 @@ export class ListaArticulosComponent {
   }
 
   getAlignment(styles: string[]) {
-    console.log('ALINEAR: ', styles);
     if (styles) {
       if (styles.includes('ql-align-right')) {
         return AlignmentType.RIGHT;
@@ -735,20 +737,38 @@ export class ListaArticulosComponent {
 
   createParagraphsAndTablesFromData(data: any[]): (Paragraph | Table)[] {
     return data.map(item => {
-      if (item?.table) {
+      if (item.table) {
         return this.createTable(item.table);
-      } else if (item?.ol) {
-        return this.createList(item?.ol);
+      } else if (item.ol) {
+        return this.createList(item.ol);
+      } else if (item.image) {
+        return this.createImage(item.image);
       } else {
         return this.createParagraph(item);
       }
     });
   }
 
+  createImage(imageData: any): Paragraph {
+    const arrayBuffer = this.base64ToArrayBuffer(imageData.src.split(',')[1]);
+    return new Paragraph({
+      children: [
+        new ImageRun({
+          data: arrayBuffer,
+          transformation: {
+            width: imageData.width || 60,
+            height: imageData.height || 75
+          }
+        })
+      ],
+      alignment: AlignmentType.CENTER
+    });
+  }
+
   createParagraph(item: any): Paragraph {
     const marginAfter = item.margin && item.margin.length > 3 ? item.margin[3] * 20 : 0;
-
     let indentLeft = 0;
+
     if (item.style && Array.isArray(item.style)) {
       item.style.forEach((style: string) => {
         switch (style) {
@@ -768,46 +788,66 @@ export class ListaArticulosComponent {
       });
     }
 
-    const paragraph: any = new Paragraph({
+    const paragraph = new Paragraph({
       alignment: this.getAlignment(item.style),
-      spacing: {
-        after: marginAfter,
-      },
-      indent: {
-        left: indentLeft,
-      }
+      spacing: { after: marginAfter },
+      indent: { left: indentLeft },
     });
 
-    if (Array.isArray(item?.text)) {
-      item?.text?.forEach((part: any) => {
-        const textRun = new TextRun({
-          text: part.text,
-          bold: part.bold || false,
-          italics: part.italics || false,
-          color: part.color || undefined,
-          highlight: part.backgroundColor || undefined,
-          underline: this.getUnderlineStyle(part.decoration),
-          strike: part.decoration === "lineThrough",
-          font: part.font || 'Arial',
-          size: part.size || 24,
-        });
-        paragraph.addChildElement(textRun);
+    if (Array.isArray(item.text)) {
+      item.text.forEach((part: any) => {
+        if (part.text) {
+          const textRun = new TextRun({
+            text: part.text,
+            bold: part.bold || false,
+            italics: part.italics || false,
+            color: part.color || undefined,
+            highlight: part.backgroundColor || undefined,
+            underline: this.getUnderlineStyle(part.decoration),
+            strike: part.decoration === "lineThrough",
+            font: part.font || 'Arial',
+            size: part.size || 24,
+          });
+          paragraph.addChildElement(textRun);
+        } else if (part.image) {
+          const imageRun = new ImageRun({
+            data: this.base64ToArrayBuffer(part.image.split(',')[1]),
+            transformation: {
+              width: part.width || 100, // Ajusta el tamaño según sea necesario
+              height: part.height || 100,
+            }
+          });
+          paragraph.addChildElement(imageRun);
+        }
       });
-    } else {
-      const textRun = new TextRun({
-        text: item?.text,
-        bold: item.bold || false,
-        italics: item.italics || false,
-        color: item.color || undefined,
-        highlight: item.backgroundColor || undefined,
-        underline: this.getUnderlineStyle(item.decoration),
-        strike: item.decoration === "lineThrough",
-        font: item.font || 'Arial',
-        size: item.size || 24,
+    } else if (item.stack) {
+      item.stack.forEach((stackItem: any) => {
+
+        if (stackItem.nodeName === "IMG") {
+          console.log(item);
+          const imageRun = new ImageRun({
+            data: this.base64ToArrayBuffer(stackItem.image.split(',')[1]),
+            transformation: {
+              width: 100, // Ajusta el tamaño según sea necesario
+              height: 100,
+            }
+          });
+          paragraph.addChildElement(imageRun);
+        }
       });
-      paragraph.addChildElement(textRun);
     }
+
     return paragraph;
+  }
+
+  base64ToArrayBuffer(base64: string): ArrayBuffer {
+    const binaryString = window.atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
   }
 
   createTable(tableData: any): Table {
