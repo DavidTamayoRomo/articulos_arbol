@@ -349,7 +349,7 @@ export class ListaArticulosComponent {
           margin: [0, 0, 0, 10],
         },
       },
-      
+
     }));
 
     const header = this.buildHeader();
@@ -374,7 +374,6 @@ export class ListaArticulosComponent {
       },
       superscript: { fontSize: 8, super: true }
     };
-    console.log(pdfContent.flat());
     const modifiedPdfContent = pdfContent.flat().map((content: any) => {
       if (content.style) {
         content.style.forEach((style: string) => {
@@ -386,6 +385,10 @@ export class ListaArticulosComponent {
       }
       return content;
     });
+    let valor =this.findSupNodes(modifiedPdfContent);
+    console.log(valor);
+    
+
     return {
       header: header,
       content: modifiedPdfContent,
@@ -394,6 +397,42 @@ export class ListaArticulosComponent {
     };
   }
 
+
+
+  findSupNodes(json: any): any[] {
+    const supNodes: any[] = [];
+
+    const searchSupNodes = (node: any, parent: any = null) => {
+        if (node.nodeName === 'SUP' && parent) {
+            if (!supNodes.includes(parent)) {
+                supNodes.push(parent);
+            }
+        }
+
+        if (node.text && Array.isArray(node.text)) {
+            node.text.forEach((childNode: any) => searchSupNodes(childNode, node));
+        }
+    };
+
+    json.forEach((node: any) => searchSupNodes(node));
+
+    return supNodes;
+}
+
+getSupNodesPageNumbers(supNodes: any[]): number[] {
+  const pageNumbers: number[] = [];
+  
+  supNodes.forEach((node: any) => {
+      if (node.positions && Array.isArray(node.positions)) {
+          node.positions.forEach((position: any) => {
+              if (position.pageNumber && !pageNumbers.includes(position.pageNumber)) {
+                  pageNumbers.push(position.pageNumber);
+              }
+          });
+      }
+  });
+
+  return pageNumbers;
 
 
 
