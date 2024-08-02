@@ -335,62 +335,64 @@ export class ListaArticulosComponent {
 
   private buildDocument(htmlContents: any): any {
     const pdfContent = htmlContents.map((html: any) => htmlToPdfmake(html.content, {
-        defaultStyles: {
-            p: {
-                margin: [0, 0, 0, 10],
-            },
-            ol: {
-                margin: [0, 0, 0, 10],
-            },
-            ul: {
-                margin: [0, 0, 0, 10],
-            },
-            li: {
-                margin: [0, 0, 0, 10],
-            },
-        }
+      defaultStyles: {
+        p: {
+          margin: [0, 0, 0, 10],
+        },
+        ol: {
+          margin: [0, 0, 0, 10],
+        },
+        ul: {
+          margin: [0, 0, 0, 10],
+        },
+        li: {
+          margin: [0, 0, 0, 10],
+        },
+      },
+      
     }));
 
     const header = this.buildHeader();
 
     const styles = {
-        header: { fontSize: 18, bold: true },
-        body: { fontSize: 12 },
-        'ql-align-right': { alignment: 'right' },
-        'ql-align-center': { alignment: 'center' },
-        'ql-align-justify': { alignment: 'justify' },
-        'ql-indent-1': {
-            margin: [30, 0, 0, 10],
-        },
-        'ql-indent-2': {
-            margin: [60, 0, 0, 10],
-        },
-        'ql-indent-3': {
-            margin: [90, 0, 0, 10],
-        },
-        'ql-indent-4': {
-            margin: [120, 0, 0, 10],
-        },
+      header: { fontSize: 18, bold: true },
+      body: { fontSize: 12 },
+      'ql-align-right': { alignment: 'right' },
+      'ql-align-center': { alignment: 'center' },
+      'ql-align-justify': { alignment: 'justify' },
+      'ql-indent-1': {
+        margin: [30, 0, 0, 10],
+      },
+      'ql-indent-2': {
+        margin: [60, 0, 0, 10],
+      },
+      'ql-indent-3': {
+        margin: [90, 0, 0, 10],
+      },
+      'ql-indent-4': {
+        margin: [120, 0, 0, 10],
+      },
+      superscript: { fontSize: 8, super: true }
     };
-console.log(pdfContent.flat());
+    console.log(pdfContent.flat());
     const modifiedPdfContent = pdfContent.flat().map((content: any) => {
-        if (content.style) {
-            content.style.forEach((style: string) => {
-                const styleDefinition = styles[style as keyof typeof styles];
-                if (styleDefinition && 'margin' in styleDefinition) {
-                    content.margin = styleDefinition.margin;
-                }
-            });
-        }
-        return content;
+      if (content.style) {
+        content.style.forEach((style: string) => {
+          const styleDefinition = styles[style as keyof typeof styles];
+          if (styleDefinition && 'margin' in styleDefinition) {
+            content.margin = styleDefinition.margin;
+          }
+        });
+      }
+      return content;
     });
     return {
-        header: header,
-        content: modifiedPdfContent,
-        styles: styles,
-        pageMargins: [40, 150, 40, 40],
+      header: header,
+      content: modifiedPdfContent,
+      styles: styles,
+      pageMargins: [40, 150, 40, 40],
     };
-}
+  }
 
 
 
@@ -480,10 +482,12 @@ console.log(pdfContent.flat());
    } */
 
 
-  exportToPDF() {
+  async exportToPDF() {
     this.isLoadingPDF = true;
     let jsonData = this.dataSource.data;
-    const docDefinition = this.buildDocument(jsonData);
+    console.log(jsonData);
+    const processedData = await this.preprocessContent(jsonData);
+    const docDefinition = await this.buildDocument(processedData);
     console.log(docDefinition);
     this.generatePDF(docDefinition)
       .then(() => {
@@ -502,7 +506,16 @@ console.log(pdfContent.flat());
       });
     });
   }
+  private preprocessContent(htmlContents: any): any {
+    return htmlContents.map((html: any) => {
+      html.content = this.replaceSupTags(html.content);
+      return html;
+    });
+  }
 
+  private replaceSupTags(html: string): string {
+    return html.replace(/<sup>(.*?)<\/sup>/g, '<sup style="font-size: 8px; vertical-align: super;">$1</sup>');
+  }
 
   jsonToDocDefinition(jsonData: any) {
     let content: any = [];

@@ -129,7 +129,7 @@ export class TwNestedNodesComponent {
                 this.resetTree();
                 setTimeout(() => {
                     this.isLoading = false;
-                }, 8000);
+                }, 1000);
 
             },
             error: (err) => {
