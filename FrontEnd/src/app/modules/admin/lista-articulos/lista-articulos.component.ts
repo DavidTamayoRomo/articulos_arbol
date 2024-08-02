@@ -385,10 +385,10 @@ export class ListaArticulosComponent {
       }
       return content;
     });
-    let valor =this.findSupNodes(modifiedPdfContent);
+    let valor = this.findSupNodes(modifiedPdfContent);
     console.log(valor);
-    
-
+    let paginas = this.getSupNodesPageNumbers(valor);
+    console.log(paginas);
     return {
       header: header,
       content: modifiedPdfContent,
@@ -403,38 +403,38 @@ export class ListaArticulosComponent {
     const supNodes: any[] = [];
 
     const searchSupNodes = (node: any, parent: any = null) => {
-        if (node.nodeName === 'SUP' && parent) {
-            if (!supNodes.includes(parent)) {
-                supNodes.push(parent);
-            }
+      if (node.nodeName === 'SUP' && parent) {
+        if (!supNodes.includes(parent)) {
+          supNodes.push(parent);
         }
+      }
 
-        if (node.text && Array.isArray(node.text)) {
-            node.text.forEach((childNode: any) => searchSupNodes(childNode, node));
-        }
+      if (node.text && Array.isArray(node.text)) {
+        node.text.forEach((childNode: any) => searchSupNodes(childNode, node));
+      }
     };
 
     json.forEach((node: any) => searchSupNodes(node));
 
     return supNodes;
-}
+  }
 
-getSupNodesPageNumbers(supNodes: any[]): number[] {
-  const pageNumbers: number[] = [];
-  
-  supNodes.forEach((node: any) => {
+  getSupNodesPageNumbers(supNodes: any[]): number[] {
+    const pageNumbers: number[] = [];
+
+    supNodes.forEach((node: any) => {
       if (node.positions && Array.isArray(node.positions)) {
-          node.positions.forEach((position: any) => {
-              if (position.pageNumber && !pageNumbers.includes(position.pageNumber)) {
-                  pageNumbers.push(position.pageNumber);
-              }
-          });
+        node.positions.forEach((position: any) => {
+          if (position.pageNumber && !pageNumbers.includes(position.pageNumber)) {
+            pageNumbers.push(position.pageNumber);
+          }
+        });
       }
-  });
+    });
 
-  return pageNumbers;
+    return pageNumbers;
 
-
+  }
 
   private processHtmlContent(htmlContent: string) {
     const parsedContent = htmlToPdfmake(htmlContent);
